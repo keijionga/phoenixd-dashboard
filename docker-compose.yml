@@ -1,0 +1,93 @@
+services:
+  phoenixd:
+    image: acinq/phoenixd:latest
+    container_name: phoenixd
+    restart: unless-stopped
+    networks:
+      - phoenixd-network
+    command: "--agree-to-terms-of-service --http-bind-ip 0.0.0.0"
+    ports:
+      - "9740:9740"
+    volumes:
+      - ./data/phoenixd:/phoenix/.phoenix
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9740/getinfo", "-u", ":${PHOENIXD_PASSWORD:-}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: phoenixd-postgres
+    restart: unless-stopped
+    networks:
+      - phoenixd-network
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-phoenixd}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-phoenixd_secret}
+      POSTGRES_DB: ${POSTGRES_DB:-phoenixd_dashboard}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-phoenixd}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: phoenixd-backend
+    restart: unless-stopped
+    networks:
+      - phoenixd-network
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-phoenixd}:${POSTGRES_PASSWORD:-phoenixd_secret}@postgres:5432/${POSTGRES_DB:-phoenixd_dashboard}?schema=public
+      PHOENIXD_URL: http://phoenixd:9740
+      PHOENIXD_PASSWORD: ${PHOENIXD_PASSWORD:-}
+    ports:
+      - "4001:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      phoenixd:
+        condition: service_started
+    volumes:
+      - ./backend/src:/app/src:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: phoenixd-frontend
+    restart: unless-stopped
+    networks:
+      - phoenixd-network
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      NEXT_PUBLIC_API_URL: http://localhost:4001
+      NEXT_PUBLIC_WS_URL: ws://localhost:4001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src:ro
+
+networks:
+  phoenixd-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
