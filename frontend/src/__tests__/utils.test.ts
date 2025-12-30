@@ -157,7 +157,7 @@ describe('formatDate utility', () => {
     const result = formatDate(0);
     expect(typeof result).toBe('string');
     // Should contain 1969 or 1970 depending on timezone
-    expect(result).toMatch(/196(9|0)/);
+    expect(result).toMatch(/19(69|70)/);
   });
 
   it('should handle future dates', () => {
