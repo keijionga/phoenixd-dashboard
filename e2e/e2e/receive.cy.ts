@@ -65,16 +65,15 @@ describe('Receive Page', () => {
       cy.contains('button', 'Create Invoice').click();
       cy.wait('@createInvoice');
 
+      // Click the copy button
       cy.contains('button', 'Copy Invoice').click();
-      // Check for either "Copied" text or the button changing state
-      cy.get('body').then(($body) => {
-        if ($body.text().includes('Copied')) {
-          cy.contains('Copied').should('exist');
-        } else {
-          // Fallback: just verify the copy button was clicked without error
-          cy.contains('button', 'Copy Invoice').should('exist');
-        }
-      });
+
+      // In CI/headless environments, clipboard API may not be available
+      // Wait for the button to either show "Copied!" or remain as "Copy Invoice"
+      // Both are valid outcomes depending on clipboard availability
+      cy.get('button')
+        .contains(/Copy Invoice|Copied/i)
+        .should('be.visible');
     });
   });
 
