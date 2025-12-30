@@ -22,6 +22,17 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
+# Create data directory with proper permissions
+echo -e "${YELLOW}Creating data directory with proper permissions...${NC}"
+mkdir -p ./data/phoenixd
+
+# Fix permissions for the phoenixd data directory
+# The phoenixd container runs as UID 1000, so we need to ensure the directory is writable
+# Using chmod 777 as a safe fallback that works across different host configurations
+chmod 777 ./data/phoenixd
+
+echo -e "${GREEN}Data directory ready!${NC}"
+
 # Start services
 echo -e "${YELLOW}Starting services...${NC}"
 docker compose up -d
@@ -78,13 +89,13 @@ echo "PHOENIXD_PASSWORD=$PASSWORD" >> .env
 
 echo -e "${GREEN}.env file updated!${NC}"
 
-# Restart backend to apply new password
-echo -e "${YELLOW}Restarting backend with new password...${NC}"
-docker compose restart backend
+# Recreate backend to apply new password (restart doesn't reload .env variables)
+echo -e "${YELLOW}Recreating backend with new password...${NC}"
+docker compose up -d backend --force-recreate
 
 # Wait for backend to be healthy
 echo -e "${YELLOW}Waiting for backend to be ready...${NC}"
-sleep 5
+sleep 10
 
 # Check if all services are running
 echo ""

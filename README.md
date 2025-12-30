@@ -98,10 +98,33 @@ open http://localhost:3000
 ```
 
 The setup script will:
+- Create the data directory with proper permissions
 - Start all Docker services
 - Wait for phoenixd to initialize
 - Automatically sync the generated password
 - Restart the backend with the correct configuration
+
+#### Troubleshooting Permission Issues
+
+If you encounter a permission error like:
+```
+Failed to open /phoenix/.phoenix/phoenix.conf with Permission denied
+```
+
+Run the following commands to fix the data directory permissions:
+```bash
+# Stop the containers
+docker compose down
+
+# Fix permissions
+chmod 777 ./data/phoenixd
+
+# Or remove the data directory and start fresh
+rm -rf ./data/phoenixd
+
+# Run setup again
+./setup.sh
+```
 
 **Manual start** (if you've already run setup):
 ```bash
