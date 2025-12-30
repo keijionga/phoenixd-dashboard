@@ -17,7 +17,7 @@
     "test:tools": "cypress run --spec 'e2e/tools.cy.ts'"
   },
   "devDependencies": {
-    "cypress": "^14.3.3",
+    "cypress": "^15.3.3",
     "typescript": "^5.8.3"
   }
 }
