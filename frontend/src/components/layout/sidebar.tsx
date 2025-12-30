@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SettingsDialog } from "@/components/settings-dialog";
+import { getNodeInfo } from "@/lib/api";
 
 const sidebarNavItems = [
   {
@@ -61,6 +62,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [chain, setChain] = useState<string>("mainnet");
 
   // Persist state in localStorage
   useEffect(() => {
@@ -68,6 +70,19 @@ export function Sidebar() {
     if (saved !== null) {
       setExpanded(saved === "true");
     }
+  }, []);
+
+  // Fetch network info
+  useEffect(() => {
+    const fetchNodeInfo = async () => {
+      try {
+        const info = await getNodeInfo();
+        setChain(info.chain || "mainnet");
+      } catch (error) {
+        console.error("Error fetching node info:", error);
+      }
+    };
+    fetchNodeInfo();
   }, []);
 
   const toggleExpanded = () => {
@@ -180,14 +195,24 @@ export function Sidebar() {
               expanded ? "px-3 py-2" : "flex-col gap-1"
             )}
           >
-            <div className="h-3 w-3 rounded-full bg-bitcoin shadow-[0_0_10px_hsl(var(--bitcoin))] flex-shrink-0" />
+            <div 
+              className={cn(
+                "h-3 w-3 rounded-full flex-shrink-0",
+                chain === "mainnet" 
+                  ? "bg-bitcoin shadow-[0_0_10px_hsl(var(--bitcoin))]"
+                  : "bg-yellow-500 shadow-[0_0_10px_hsl(45,100%,50%)]"
+              )} 
+            />
             <span
               className={cn(
                 "font-medium uppercase tracking-wider text-muted-foreground",
                 expanded ? "text-xs" : "text-[9px]"
               )}
             >
-              {expanded ? "Mainnet" : "Main"}
+              {expanded 
+                ? (chain === "mainnet" ? "Mainnet" : "Testnet") 
+                : (chain === "mainnet" ? "Main" : "Test")
+              }
             </span>
           </div>
 
