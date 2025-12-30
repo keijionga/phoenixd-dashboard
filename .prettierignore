@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.next/
+dist/
+build/
+
+# Generated files
+*.generated.*
+prisma/migrations/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Docker
+data/
+
+# Misc
+.DS_Store
+*.log

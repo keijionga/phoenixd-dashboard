@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Send,
   Zap,
@@ -11,40 +11,44 @@ import {
   ArrowUpFromLine,
   Check,
   AlertCircle,
-} from "lucide-react";
-import { payInvoice, payOffer, payLnAddress, sendToAddress } from "@/lib/api";
-import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { PageTabs, type TabItem } from "@/components/ui/page-tabs";
+} from 'lucide-react';
+import { payInvoice, payOffer, payLnAddress, sendToAddress } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+import { PageTabs, type TabItem } from '@/components/ui/page-tabs';
 
 export default function SendPage() {
-  const [activeTab, setActiveTab] = useState<"invoice" | "offer" | "address" | "onchain">("invoice");
+  const [activeTab, setActiveTab] = useState<'invoice' | 'offer' | 'address' | 'onchain'>(
+    'invoice'
+  );
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; data?: unknown; error?: string } | null>(null);
+  const [result, setResult] = useState<{ success: boolean; data?: unknown; error?: string } | null>(
+    null
+  );
   const { toast } = useToast();
 
   // Invoice form
-  const [invoice, setInvoice] = useState("");
+  const [invoice, setInvoice] = useState('');
 
   // Offer form
-  const [offer, setOffer] = useState("");
-  const [offerAmount, setOfferAmount] = useState("");
-  const [offerMessage, setOfferMessage] = useState("");
+  const [offer, setOffer] = useState('');
+  const [offerAmount, setOfferAmount] = useState('');
+  const [offerMessage, setOfferMessage] = useState('');
 
   // LN Address form
-  const [lnAddress, setLnAddress] = useState("");
-  const [lnAddressAmount, setLnAddressAmount] = useState("");
-  const [lnAddressMessage, setLnAddressMessage] = useState("");
+  const [lnAddress, setLnAddress] = useState('');
+  const [lnAddressAmount, setLnAddressAmount] = useState('');
+  const [lnAddressMessage, setLnAddressMessage] = useState('');
 
   // On-chain form
-  const [btcAddress, setBtcAddress] = useState("");
-  const [btcAmount, setBtcAmount] = useState("");
-  const [btcFeeRate, setBtcFeeRate] = useState("");
+  const [btcAddress, setBtcAddress] = useState('');
+  const [btcAmount, setBtcAmount] = useState('');
+  const [btcFeeRate, setBtcFeeRate] = useState('');
 
   const handlePayInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!invoice) {
-      toast({ variant: "destructive", title: "Error", description: "Invoice is required" });
+      toast({ variant: 'destructive', title: 'Error', description: 'Invoice is required' });
       return;
     }
 
@@ -53,11 +57,11 @@ export default function SendPage() {
     try {
       const data = await payInvoice({ invoice });
       setResult({ success: true, data });
-      setInvoice("");
-      toast({ title: "Payment Sent!", description: "Invoice paid successfully" });
+      setInvoice('');
+      toast({ title: 'Payment Sent!', description: 'Invoice paid successfully' });
     } catch (error) {
       setResult({ success: false, error: String(error) });
-      toast({ variant: "destructive", title: "Payment Failed", description: String(error) });
+      toast({ variant: 'destructive', title: 'Payment Failed', description: String(error) });
     } finally {
       setLoading(false);
     }
@@ -66,7 +70,11 @@ export default function SendPage() {
   const handlePayOffer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!offer || !offerAmount) {
-      toast({ variant: "destructive", title: "Error", description: "Offer and amount are required" });
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Offer and amount are required',
+      });
       return;
     }
 
@@ -79,13 +87,13 @@ export default function SendPage() {
         message: offerMessage || undefined,
       });
       setResult({ success: true, data });
-      setOffer("");
-      setOfferAmount("");
-      setOfferMessage("");
-      toast({ title: "Payment Sent!", description: "Offer paid successfully" });
+      setOffer('');
+      setOfferAmount('');
+      setOfferMessage('');
+      toast({ title: 'Payment Sent!', description: 'Offer paid successfully' });
     } catch (error) {
       setResult({ success: false, error: String(error) });
-      toast({ variant: "destructive", title: "Payment Failed", description: String(error) });
+      toast({ variant: 'destructive', title: 'Payment Failed', description: String(error) });
     } finally {
       setLoading(false);
     }
@@ -94,7 +102,11 @@ export default function SendPage() {
   const handlePayLnAddress = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!lnAddress || !lnAddressAmount) {
-      toast({ variant: "destructive", title: "Error", description: "Address and amount are required" });
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Address and amount are required',
+      });
       return;
     }
 
@@ -107,13 +119,13 @@ export default function SendPage() {
         message: lnAddressMessage || undefined,
       });
       setResult({ success: true, data });
-      setLnAddress("");
-      setLnAddressAmount("");
-      setLnAddressMessage("");
-      toast({ title: "Payment Sent!", description: "Payment to LN address successful" });
+      setLnAddress('');
+      setLnAddressAmount('');
+      setLnAddressMessage('');
+      toast({ title: 'Payment Sent!', description: 'Payment to LN address successful' });
     } catch (error) {
       setResult({ success: false, error: String(error) });
-      toast({ variant: "destructive", title: "Payment Failed", description: String(error) });
+      toast({ variant: 'destructive', title: 'Payment Failed', description: String(error) });
     } finally {
       setLoading(false);
     }
@@ -122,7 +134,11 @@ export default function SendPage() {
   const handleSendOnChain = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!btcAddress || !btcAmount) {
-      toast({ variant: "destructive", title: "Error", description: "Address and amount are required" });
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Address and amount are required',
+      });
       return;
     }
 
@@ -135,23 +151,23 @@ export default function SendPage() {
         feerateSatByte: btcFeeRate ? parseInt(btcFeeRate) : undefined,
       });
       setResult({ success: true, data });
-      setBtcAddress("");
-      setBtcAmount("");
-      setBtcFeeRate("");
-      toast({ title: "Transaction Sent!", description: "On-chain payment initiated" });
+      setBtcAddress('');
+      setBtcAmount('');
+      setBtcFeeRate('');
+      toast({ title: 'Transaction Sent!', description: 'On-chain payment initiated' });
     } catch (error) {
       setResult({ success: false, error: String(error) });
-      toast({ variant: "destructive", title: "Transaction Failed", description: String(error) });
+      toast({ variant: 'destructive', title: 'Transaction Failed', description: String(error) });
     } finally {
       setLoading(false);
     }
   };
 
   const tabs: TabItem[] = [
-    { id: "invoice", label: "Invoice", icon: Zap },
-    { id: "offer", label: "Offer", icon: Gift },
-    { id: "address", label: "LN Address", icon: Mail },
-    { id: "onchain", label: "On-chain", icon: Bitcoin },
+    { id: 'invoice', label: 'Invoice', icon: Zap },
+    { id: 'offer', label: 'Offer', icon: Gift },
+    { id: 'address', label: 'LN Address', icon: Mail },
+    { id: 'onchain', label: 'On-chain', icon: Bitcoin },
   ];
 
   return (
@@ -168,13 +184,13 @@ export default function SendPage() {
       <PageTabs
         tabs={tabs}
         activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab as "invoice" | "offer" | "address" | "onchain")}
+        onTabChange={(tab) => setActiveTab(tab as 'invoice' | 'offer' | 'address' | 'onchain')}
       />
 
       {/* Forms */}
       <div className="max-w-2xl">
         {/* Pay Invoice */}
-        {activeTab === "invoice" && (
+        {activeTab === 'invoice' && (
           <div className="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6">
             <div className="flex items-center gap-3 mb-4 md:mb-6">
               <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl md:rounded-2xl bg-lightning/10">
@@ -199,15 +215,25 @@ export default function SendPage() {
                 />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full flex items-center justify-center gap-2">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Send className="h-5 w-5" /> Pay Invoice</>}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gradient w-full flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Send className="h-5 w-5" /> Pay Invoice
+                  </>
+                )}
               </button>
             </form>
           </div>
         )}
 
         {/* Pay Offer */}
-        {activeTab === "offer" && (
+        {activeTab === 'offer' && (
           <div className="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6">
             <div className="flex items-center gap-3 mb-4 md:mb-6">
               <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl md:rounded-2xl bg-accent/10">
@@ -221,7 +247,9 @@ export default function SendPage() {
 
             <form onSubmit={handlePayOffer} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Offer *</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Offer *
+                </label>
                 <textarea
                   placeholder="lno..."
                   value={offer}
@@ -231,7 +259,9 @@ export default function SendPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount (sats) *</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Amount (sats) *
+                </label>
                 <input
                   type="number"
                   placeholder="0"
@@ -243,7 +273,9 @@ export default function SendPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Message</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Message
+                </label>
                 <input
                   placeholder="Optional message"
                   value={offerMessage}
@@ -252,15 +284,25 @@ export default function SendPage() {
                 />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full flex items-center justify-center gap-2">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Send className="h-5 w-5" /> Pay Offer</>}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gradient w-full flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Send className="h-5 w-5" /> Pay Offer
+                  </>
+                )}
               </button>
             </form>
           </div>
         )}
 
         {/* Pay LN Address */}
-        {activeTab === "address" && (
+        {activeTab === 'address' && (
           <div className="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6">
             <div className="flex items-center gap-3 mb-4 md:mb-6">
               <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl md:rounded-2xl bg-primary/10">
@@ -268,13 +310,17 @@ export default function SendPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-sm md:text-base">Pay Lightning Address</h3>
-                <p className="text-xs md:text-sm text-muted-foreground">Send sats to any LN address</p>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  Send sats to any LN address
+                </p>
               </div>
             </div>
 
             <form onSubmit={handlePayLnAddress} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Lightning Address *</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Lightning Address *
+                </label>
                 <input
                   placeholder="user@domain.com"
                   value={lnAddress}
@@ -284,7 +330,9 @@ export default function SendPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount (sats) *</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Amount (sats) *
+                </label>
                 <input
                   type="number"
                   placeholder="0"
@@ -296,7 +344,9 @@ export default function SendPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Message</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Message
+                </label>
                 <input
                   placeholder="Optional message"
                   value={lnAddressMessage}
@@ -305,15 +355,25 @@ export default function SendPage() {
                 />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full flex items-center justify-center gap-2">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Send className="h-5 w-5" /> Send Payment</>}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gradient w-full flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Send className="h-5 w-5" /> Send Payment
+                  </>
+                )}
               </button>
             </form>
           </div>
         )}
 
         {/* On-chain */}
-        {activeTab === "onchain" && (
+        {activeTab === 'onchain' && (
           <div className="glass-card rounded-2xl md:rounded-3xl p-4 md:p-6">
             <div className="flex items-center gap-3 mb-4 md:mb-6">
               <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl md:rounded-2xl bg-bitcoin/10">
@@ -321,13 +381,17 @@ export default function SendPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-sm md:text-base">Send On-chain</h3>
-                <p className="text-xs md:text-sm text-muted-foreground">Send Bitcoin to a regular address</p>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  Send Bitcoin to a regular address
+                </p>
               </div>
             </div>
 
             <form onSubmit={handleSendOnChain} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Bitcoin Address *</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Bitcoin Address *
+                </label>
                 <input
                   placeholder="bc1..."
                   value={btcAddress}
@@ -337,7 +401,9 @@ export default function SendPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Amount (sats) *</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Amount (sats) *
+                </label>
                 <input
                   type="number"
                   placeholder="0"
@@ -349,7 +415,9 @@ export default function SendPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Fee Rate (sat/vB)</label>
+                <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  Fee Rate (sat/vB)
+                </label>
                 <input
                   type="number"
                   placeholder="Auto"
@@ -360,8 +428,18 @@ export default function SendPage() {
                 />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full flex items-center justify-center gap-2">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><ArrowUpFromLine className="h-5 w-5" /> Send Bitcoin</>}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gradient w-full flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <ArrowUpFromLine className="h-5 w-5" /> Send Bitcoin
+                  </>
+                )}
               </button>
             </form>
           </div>
@@ -370,14 +448,18 @@ export default function SendPage() {
 
       {/* Result */}
       {result && (
-        <div className={cn(
-          "max-w-2xl glass-card rounded-2xl md:rounded-3xl p-4 md:p-6 flex items-center gap-3 md:gap-4",
-          result.success ? "border-success/30" : "border-destructive/30"
-        )}>
-          <div className={cn(
-            "flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl md:rounded-2xl shrink-0",
-            result.success ? "bg-success/10" : "bg-destructive/10"
-          )}>
+        <div
+          className={cn(
+            'max-w-2xl glass-card rounded-2xl md:rounded-3xl p-4 md:p-6 flex items-center gap-3 md:gap-4',
+            result.success ? 'border-success/30' : 'border-destructive/30'
+          )}
+        >
+          <div
+            className={cn(
+              'flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-xl md:rounded-2xl shrink-0',
+              result.success ? 'bg-success/10' : 'bg-destructive/10'
+            )}
+          >
             {result.success ? (
               <Check className="h-5 w-5 md:h-6 md:w-6 text-success" />
             ) : (
@@ -385,11 +467,18 @@ export default function SendPage() {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className={cn("font-semibold text-sm md:text-base", result.success ? "text-success" : "text-destructive")}>
-              {result.success ? "Payment Successful!" : "Payment Failed"}
+            <p
+              className={cn(
+                'font-semibold text-sm md:text-base',
+                result.success ? 'text-success' : 'text-destructive'
+              )}
+            >
+              {result.success ? 'Payment Successful!' : 'Payment Failed'}
             </p>
             {result.error && (
-              <p className="mt-1 text-xs md:text-sm text-muted-foreground truncate">{result.error}</p>
+              <p className="mt-1 text-xs md:text-sm text-muted-foreground truncate">
+                {result.error}
+              </p>
             )}
           </div>
         </div>

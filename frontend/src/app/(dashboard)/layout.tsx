@@ -1,20 +1,16 @@
-"use client";
+'use client';
 
-import { Sidebar } from "@/components/layout/sidebar";
-import { BottomNav } from "@/components/layout/bottom-nav";
-import { Header } from "@/components/layout/header";
-import { Toaster } from "@/components/ui/toaster";
-import { useWebSocket } from "@/hooks/use-websocket";
-import { useToast } from "@/hooks/use-toast";
-import { formatSats } from "@/lib/utils";
-import { useCallback, useRef, useState } from "react";
-import { type Notification } from "@/components/notifications-popover";
+import { Sidebar } from '@/components/layout/sidebar';
+import { BottomNav } from '@/components/layout/bottom-nav';
+import { Header } from '@/components/layout/header';
+import { Toaster } from '@/components/ui/toaster';
+import { useWebSocket } from '@/hooks/use-websocket';
+import { useToast } from '@/hooks/use-toast';
+import { formatSats } from '@/lib/utils';
+import { useCallback, useRef, useState } from 'react';
+import { type Notification } from '@/components/notifications-popover';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { toast } = useToast();
   const balanceRefreshRef = useRef<(() => void) | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -25,7 +21,7 @@ export default function DashboardLayout({
     }
   }, []);
 
-  const addNotification = useCallback((notification: Omit<Notification, "id" | "read">) => {
+  const addNotification = useCallback((notification: Omit<Notification, 'id' | 'read'>) => {
     const newNotification: Notification = {
       ...notification,
       id: `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -35,9 +31,7 @@ export default function DashboardLayout({
   }, []);
 
   const handleNotificationRead = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, read: true } : n)));
   }, []);
 
   const handleNotificationsMarkAllRead = useCallback(() => {
@@ -56,18 +50,18 @@ export default function DashboardLayout({
     onPaymentReceived: (event) => {
       // Show toast
       toast({
-        title: "⚡ Payment Received!",
+        title: '⚡ Payment Received!',
         description: `${formatSats(event.amountSat || 0)} received${
-          event.payerNote ? ` - "${event.payerNote}"` : ""
+          event.payerNote ? ` - "${event.payerNote}"` : ''
         }`,
-        variant: "default",
+        variant: 'default',
       });
 
       // Add notification
       addNotification({
-        type: "payment_received",
-        title: "Payment Received",
-        message: event.payerNote || "You received a Lightning payment",
+        type: 'payment_received',
+        title: 'Payment Received',
+        message: event.payerNote || 'You received a Lightning payment',
         amount: event.amountSat || 0,
         timestamp: Date.now(),
       });
@@ -75,16 +69,16 @@ export default function DashboardLayout({
       refreshBalance();
     },
     onConnect: () => {
-      console.log("WebSocket connected");
+      console.log('WebSocket connected');
       addNotification({
-        type: "info",
-        title: "Connected",
-        message: "Real-time notifications are active",
+        type: 'info',
+        title: 'Connected',
+        message: 'Real-time notifications are active',
         timestamp: Date.now(),
       });
     },
     onDisconnect: () => {
-      console.log("WebSocket disconnected");
+      console.log('WebSocket disconnected');
     },
   });
 

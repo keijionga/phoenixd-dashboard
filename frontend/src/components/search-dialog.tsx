@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Search,
   ArrowDownToLine,
@@ -13,10 +13,15 @@ import {
   X,
   FileCode,
   Zap,
-} from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { cn, formatSats } from "@/lib/utils";
-import { getIncomingPayments, getOutgoingPayments, type IncomingPayment, type OutgoingPayment } from "@/lib/api";
+} from 'lucide-react';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { cn, formatSats } from '@/lib/utils';
+import {
+  getIncomingPayments,
+  getOutgoingPayments,
+  type IncomingPayment,
+  type OutgoingPayment,
+} from '@/lib/api';
 
 interface SearchDialogProps {
   open: boolean;
@@ -24,7 +29,7 @@ interface SearchDialogProps {
 }
 
 type SearchResult = {
-  type: "page" | "payment";
+  type: 'page' | 'payment';
   title: string;
   subtitle?: string;
   icon: React.ReactNode;
@@ -33,18 +38,60 @@ type SearchResult = {
 };
 
 const pages: SearchResult[] = [
-  { type: "page", title: "Overview", subtitle: "Dashboard home", icon: <Home className="h-4 w-4" />, href: "/" },
-  { type: "page", title: "Receive", subtitle: "Create invoices", icon: <ArrowDownToLine className="h-4 w-4" />, href: "/receive" },
-  { type: "page", title: "Send", subtitle: "Pay invoices", icon: <ArrowUpFromLine className="h-4 w-4" />, href: "/send" },
-  { type: "page", title: "Payments", subtitle: "Transaction history", icon: <FileCode className="h-4 w-4" />, href: "/payments" },
-  { type: "page", title: "Channels", subtitle: "Manage channels", icon: <Layers className="h-4 w-4" />, href: "/channels" },
-  { type: "page", title: "Tools", subtitle: "Decode & estimate", icon: <Wrench className="h-4 w-4" />, href: "/tools" },
-  { type: "page", title: "LNURL", subtitle: "LNURL operations", icon: <Link2 className="h-4 w-4" />, href: "/lnurl" },
+  {
+    type: 'page',
+    title: 'Overview',
+    subtitle: 'Dashboard home',
+    icon: <Home className="h-4 w-4" />,
+    href: '/',
+  },
+  {
+    type: 'page',
+    title: 'Receive',
+    subtitle: 'Create invoices',
+    icon: <ArrowDownToLine className="h-4 w-4" />,
+    href: '/receive',
+  },
+  {
+    type: 'page',
+    title: 'Send',
+    subtitle: 'Pay invoices',
+    icon: <ArrowUpFromLine className="h-4 w-4" />,
+    href: '/send',
+  },
+  {
+    type: 'page',
+    title: 'Payments',
+    subtitle: 'Transaction history',
+    icon: <FileCode className="h-4 w-4" />,
+    href: '/payments',
+  },
+  {
+    type: 'page',
+    title: 'Channels',
+    subtitle: 'Manage channels',
+    icon: <Layers className="h-4 w-4" />,
+    href: '/channels',
+  },
+  {
+    type: 'page',
+    title: 'Tools',
+    subtitle: 'Decode & estimate',
+    icon: <Wrench className="h-4 w-4" />,
+    href: '/tools',
+  },
+  {
+    type: 'page',
+    title: 'LNURL',
+    subtitle: 'LNURL operations',
+    icon: <Link2 className="h-4 w-4" />,
+    href: '/lnurl',
+  },
 ];
 
 export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   const router = useRouter();
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>(pages);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [payments, setPayments] = useState<(IncomingPayment | OutgoingPayment)[]>([]);
@@ -54,20 +101,19 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   useEffect(() => {
     if (open && payments.length === 0) {
       setLoading(true);
-      Promise.all([
-        getIncomingPayments({ limit: 20 }),
-        getOutgoingPayments({ limit: 20 }),
-      ]).then(([incoming, outgoing]) => {
-        setPayments([...(incoming || []), ...(outgoing || [])]);
-        setLoading(false);
-      }).catch(() => setLoading(false));
+      Promise.all([getIncomingPayments({ limit: 20 }), getOutgoingPayments({ limit: 20 })])
+        .then(([incoming, outgoing]) => {
+          setPayments([...(incoming || []), ...(outgoing || [])]);
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
     }
   }, [open, payments.length]);
 
   // Filter results based on query
   useEffect(() => {
     const q = query.toLowerCase().trim();
-    
+
     if (!q) {
       setResults(pages);
       setSelectedIndex(0);
@@ -75,9 +121,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     }
 
     const filteredPages = pages.filter(
-      (p) =>
-        p.title.toLowerCase().includes(q) ||
-        p.subtitle?.toLowerCase().includes(q)
+      (p) => p.title.toLowerCase().includes(q) || p.subtitle?.toLowerCase().includes(q)
     );
 
     const filteredPayments: SearchResult[] = payments
@@ -86,18 +130,31 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
           'paymentHash' in p ? p.paymentHash : '',
           'paymentId' in p ? p.paymentId : '',
           'description' in p ? p.description : '',
-        ].join(" ").toLowerCase();
+        ]
+          .join(' ')
+          .toLowerCase();
         return searchStr.includes(q);
       })
       .slice(0, 5)
       .map((p) => {
         const isIncoming = 'receivedSat' in p;
         return {
-          type: "payment" as const,
-          title: isIncoming ? `+${formatSats((p as IncomingPayment).receivedSat)}` : `-${formatSats((p as OutgoingPayment).sent)}`,
-          subtitle: 'description' in p && p.description ? p.description : ('paymentHash' in p ? `${p.paymentHash?.slice(0, 16)}...` : ''),
-          icon: isIncoming ? <ArrowDownToLine className="h-4 w-4 text-success" /> : <ArrowUpFromLine className="h-4 w-4 text-primary" />,
-          href: "/payments",
+          type: 'payment' as const,
+          title: isIncoming
+            ? `+${formatSats((p as IncomingPayment).receivedSat)}`
+            : `-${formatSats((p as OutgoingPayment).sent)}`,
+          subtitle:
+            'description' in p && p.description
+              ? p.description
+              : 'paymentHash' in p
+                ? `${p.paymentHash?.slice(0, 16)}...`
+                : '',
+          icon: isIncoming ? (
+            <ArrowDownToLine className="h-4 w-4 text-success" />
+          ) : (
+            <ArrowUpFromLine className="h-4 w-4 text-primary" />
+          ),
+          href: '/payments',
           data: p,
         };
       });
@@ -109,23 +166,23 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
   // Keyboard navigation
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (e.key === "ArrowDown") {
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
         setSelectedIndex((i) => Math.min(i + 1, results.length - 1));
-      } else if (e.key === "ArrowUp") {
+      } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelectedIndex((i) => Math.max(i - 1, 0));
-      } else if (e.key === "Enter" && results[selectedIndex]) {
+      } else if (e.key === 'Enter' && results[selectedIndex]) {
         e.preventDefault();
         const result = results[selectedIndex];
         if (result.href) {
           router.push(result.href);
           onOpenChange(false);
-          setQuery("");
+          setQuery('');
         }
-      } else if (e.key === "Escape") {
+      } else if (e.key === 'Escape') {
         onOpenChange(false);
-        setQuery("");
+        setQuery('');
       }
     },
     [results, selectedIndex, router, onOpenChange]
@@ -135,14 +192,14 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
     if (result.href) {
       router.push(result.href);
       onOpenChange(false);
-      setQuery("");
+      setQuery('');
     }
   };
 
   // Reset on close
   useEffect(() => {
     if (!open) {
-      setQuery("");
+      setQuery('');
       setSelectedIndex(0);
     }
   }, [open]);
@@ -164,7 +221,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
           />
           {query && (
             <button
-              onClick={() => setQuery("")}
+              onClick={() => setQuery('')}
               className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10"
             >
               <X className="h-4 w-4 text-muted-foreground" />
@@ -189,30 +246,34 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
           ) : (
             <>
               {/* Pages Section */}
-              {results.some((r) => r.type === "page") && (
+              {results.some((r) => r.type === 'page') && (
                 <div className="px-2 mb-2">
                   <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Pages
                   </p>
                   {results
-                    .filter((r) => r.type === "page")
-                    .map((result, index) => {
+                    .filter((r) => r.type === 'page')
+                    .map((result, _index) => {
                       const actualIndex = results.findIndex((r) => r === result);
                       return (
                         <button
                           key={result.title}
                           onClick={() => handleSelect(result)}
                           className={cn(
-                            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors",
+                            'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors',
                             actualIndex === selectedIndex
-                              ? "bg-primary/10 text-foreground"
-                              : "hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground"
+                              ? 'bg-primary/10 text-foreground'
+                              : 'hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
                           )}
                         >
-                          <div className={cn(
-                            "flex h-9 w-9 items-center justify-center rounded-lg",
-                            actualIndex === selectedIndex ? "bg-primary/20" : "bg-black/5 dark:bg-white/5"
-                          )}>
+                          <div
+                            className={cn(
+                              'flex h-9 w-9 items-center justify-center rounded-lg',
+                              actualIndex === selectedIndex
+                                ? 'bg-primary/20'
+                                : 'bg-black/5 dark:bg-white/5'
+                            )}
+                          >
                             {result.icon}
                           </div>
                           <div>
@@ -228,13 +289,13 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
               )}
 
               {/* Payments Section */}
-              {results.some((r) => r.type === "payment") && (
+              {results.some((r) => r.type === 'payment') && (
                 <div className="px-2">
                   <p className="px-2 py-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider">
                     Payments
                   </p>
                   {results
-                    .filter((r) => r.type === "payment")
+                    .filter((r) => r.type === 'payment')
                     .map((result) => {
                       const actualIndex = results.findIndex((r) => r === result);
                       return (
@@ -242,22 +303,28 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                           key={`payment-${actualIndex}`}
                           onClick={() => handleSelect(result)}
                           className={cn(
-                            "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors",
+                            'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors',
                             actualIndex === selectedIndex
-                              ? "bg-primary/10 text-foreground"
-                              : "hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground"
+                              ? 'bg-primary/10 text-foreground'
+                              : 'hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
                           )}
                         >
-                          <div className={cn(
-                            "flex h-9 w-9 items-center justify-center rounded-lg",
-                            actualIndex === selectedIndex ? "bg-primary/20" : "bg-black/5 dark:bg-white/5"
-                          )}>
+                          <div
+                            className={cn(
+                              'flex h-9 w-9 items-center justify-center rounded-lg',
+                              actualIndex === selectedIndex
+                                ? 'bg-primary/20'
+                                : 'bg-black/5 dark:bg-white/5'
+                            )}
+                          >
                             {result.icon}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-sm">{result.title}</p>
                             {result.subtitle && (
-                              <p className="text-xs text-muted-foreground truncate">{result.subtitle}</p>
+                              <p className="text-xs text-muted-foreground truncate">
+                                {result.subtitle}
+                              </p>
                             )}
                           </div>
                         </button>
@@ -273,18 +340,28 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
         <div className="flex items-center justify-between px-4 py-2 border-t border-black/[0.08] dark:border-white/[0.08] text-xs text-muted-foreground">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">↑</kbd>
-              <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">↓</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">
+                ↑
+              </kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">
+                ↓
+              </kbd>
               navigate
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">↵</kbd>
+              <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">
+                ↵
+              </kbd>
               select
             </span>
           </div>
           <span className="flex items-center gap-1">
-            <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">⌘</kbd>
-            <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">K</kbd>
+            <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">
+              ⌘
+            </kbd>
+            <kbd className="px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/5 border border-black/[0.08] dark:border-white/[0.08]">
+              K
+            </kbd>
             to open
           </span>
         </div>

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Layers,
   ExternalLink,
@@ -9,10 +9,10 @@ import {
   ArrowUpFromLine,
   Activity,
   Loader2,
-} from "lucide-react";
-import { listChannels, closeChannel, type Channel } from "@/lib/api";
-import { formatSats, cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
+} from 'lucide-react';
+import { listChannels, closeChannel, type Channel } from '@/lib/api';
+import { formatSats, cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ChannelsPage() {
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -26,8 +26,8 @@ export default function ChannelsPage() {
         const data = await listChannels();
         setChannels(data || []);
       } catch (error) {
-        console.error("Failed to fetch channels:", error);
-        toast({ variant: "destructive", title: "Error", description: "Failed to load channels" });
+        console.error('Failed to fetch channels:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to load channels' });
       } finally {
         setLoading(false);
       }
@@ -37,16 +37,16 @@ export default function ChannelsPage() {
   }, [toast]);
 
   const handleCloseChannel = async (channelId: string) => {
-    if (!confirm("Are you sure you want to close this channel?")) return;
+    if (!confirm('Are you sure you want to close this channel?')) return;
 
     setClosingChannel(channelId);
     try {
       await closeChannel({ channelId });
-      toast({ title: "Channel Closing", description: "Channel close initiated" });
+      toast({ title: 'Channel Closing', description: 'Channel close initiated' });
       const data = await listChannels();
       setChannels(data || []);
-    } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to close channel" });
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to close channel' });
     } finally {
       setClosingChannel(null);
     }
@@ -54,12 +54,16 @@ export default function ChannelsPage() {
 
   const getStateColor = (state: string) => {
     switch (state) {
-      case "NORMAL": return "bg-success/10 text-success";
-      case "SYNCING":
-      case "WAIT_FOR_FUNDING_CONFIRMED": return "bg-yellow-500/10 text-yellow-500";
-      case "CLOSING":
-      case "CLOSED": return "bg-destructive/10 text-destructive";
-      default: return "bg-white/10 text-foreground";
+      case 'NORMAL':
+        return 'bg-success/10 text-success';
+      case 'SYNCING':
+      case 'WAIT_FOR_FUNDING_CONFIRMED':
+        return 'bg-yellow-500/10 text-yellow-500';
+      case 'CLOSING':
+      case 'CLOSED':
+        return 'bg-destructive/10 text-destructive';
+      default:
+        return 'bg-white/10 text-foreground';
     }
   };
 
@@ -139,9 +143,8 @@ export default function ChannelsPage() {
       ) : (
         <div className="space-y-4">
           {channels.map((channel) => {
-            const balancePercent = channel.capacitySat > 0 
-              ? (channel.balanceSat / channel.capacitySat) * 100 
-              : 0;
+            const balancePercent =
+              channel.capacitySat > 0 ? (channel.balanceSat / channel.capacitySat) * 100 : 0;
 
             return (
               <div key={channel.channelId} className="glass-card rounded-3xl p-6">
@@ -152,15 +155,18 @@ export default function ChannelsPage() {
                       <Activity className="h-6 w-6 text-primary" />
                     </div>
                     <div>
-                      <p className="font-mono font-medium">
-                        {channel.channelId.slice(0, 16)}...
-                      </p>
+                      <p className="font-mono font-medium">{channel.channelId.slice(0, 16)}...</p>
                       <p className="font-mono text-xs text-muted-foreground">
                         {channel.fundingTxId.slice(0, 24)}...
                       </p>
                     </div>
                   </div>
-                  <span className={cn("px-3 py-1.5 rounded-full text-xs font-medium", getStateColor(channel.state))}>
+                  <span
+                    className={cn(
+                      'px-3 py-1.5 rounded-full text-xs font-medium',
+                      getStateColor(channel.state)
+                    )}
+                  >
                     {channel.state}
                   </span>
                 </div>
@@ -171,10 +177,14 @@ export default function ChannelsPage() {
                     <div className="flex items-center gap-2">
                       <div className="h-2 w-2 rounded-full bg-lightning" />
                       <span className="text-muted-foreground">Outbound</span>
-                      <span className="font-mono font-semibold">{formatSats(channel.balanceSat)}</span>
+                      <span className="font-mono font-semibold">
+                        {formatSats(channel.balanceSat)}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-semibold">{formatSats(channel.inboundLiquiditySat)}</span>
+                      <span className="font-mono font-semibold">
+                        {formatSats(channel.inboundLiquiditySat)}
+                      </span>
                       <span className="text-muted-foreground">Inbound</span>
                       <div className="h-2 w-2 rounded-full bg-success" />
                     </div>
@@ -193,7 +203,9 @@ export default function ChannelsPage() {
                 {/* Actions */}
                 <div className="flex gap-3">
                   <button
-                    onClick={() => window.open(`https://mempool.space/tx/${channel.fundingTxId}`, "_blank")}
+                    onClick={() =>
+                      window.open(`https://mempool.space/tx/${channel.fundingTxId}`, '_blank')
+                    }
                     className="glass-button flex-1 flex items-center justify-center gap-2"
                   >
                     <ExternalLink className="h-4 w-4" />
@@ -201,7 +213,7 @@ export default function ChannelsPage() {
                   </button>
                   <button
                     onClick={() => handleCloseChannel(channel.channelId)}
-                    disabled={closingChannel === channel.channelId || channel.state !== "NORMAL"}
+                    disabled={closingChannel === channel.channelId || channel.state !== 'NORMAL'}
                     className="glass-button flex items-center justify-center gap-2 text-destructive hover:bg-destructive/10 disabled:opacity-50"
                   >
                     {closingChannel === channel.channelId ? (

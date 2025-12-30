@@ -1,0 +1,34 @@
+{
+  "name": "phoenixd-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Phoenixd Dashboard - Lightning Network Node Management",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:frontend": "npm run build --prefix frontend",
+    "build:backend": "npm run build --prefix backend",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "npm run lint --prefix frontend",
+    "lint:backend": "npm run lint --prefix backend",
+    "lint:fix": "npm run lint:fix:frontend && npm run lint:fix:backend",
+    "lint:fix:frontend": "npm run lint:fix --prefix frontend",
+    "lint:fix:backend": "npm run lint:fix --prefix backend",
+    "format": "npm run format:frontend && npm run format:backend",
+    "format:frontend": "npm run format --prefix frontend",
+    "format:backend": "npm run format --prefix backend",
+    "format:check": "npm run format:check:frontend && npm run format:check:backend",
+    "format:check:frontend": "npm run format:check --prefix frontend",
+    "format:check:backend": "npm run format:check --prefix backend",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "npm run test --prefix frontend",
+    "test:backend": "npm run test --prefix backend",
+    "test:watch": "concurrently \"npm run test:watch --prefix frontend\" \"npm run test:watch --prefix backend\"",
+    "install:all": "npm install && npm install --prefix frontend && npm install --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

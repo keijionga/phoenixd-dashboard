@@ -8,22 +8,22 @@ export class PhoenixdService {
 
   constructor() {
     this.config = {
-      url: process.env.PHOENIXD_URL || "http://phoenixd:9740",
-      password: process.env.PHOENIXD_PASSWORD || "",
+      url: process.env.PHOENIXD_URL || 'http://phoenixd:9740',
+      password: process.env.PHOENIXD_PASSWORD || '',
     };
   }
 
   private getAuthHeader(): string {
-    return "Basic " + Buffer.from(`:${this.config.password}`).toString("base64");
+    return 'Basic ' + Buffer.from(`:${this.config.password}`).toString('base64');
   }
 
   private async request<T>(
-    method: "GET" | "POST",
+    method: 'GET' | 'POST',
     endpoint: string,
     body?: Record<string, unknown>
   ): Promise<T> {
     const url = `${this.config.url}${endpoint}`;
-    
+
     const headers: Record<string, string> = {
       Authorization: this.getAuthHeader(),
     };
@@ -33,8 +33,8 @@ export class PhoenixdService {
       headers,
     };
 
-    if (method === "POST" && body) {
-      headers["Content-Type"] = "application/x-www-form-urlencoded";
+    if (method === 'POST' && body) {
+      headers['Content-Type'] = 'application/x-www-form-urlencoded';
       const formData = new URLSearchParams();
       for (const [key, value] of Object.entries(body)) {
         if (value !== undefined && value !== null) {
@@ -51,11 +51,11 @@ export class PhoenixdService {
       throw new Error(`Phoenixd API error: ${response.status} - ${errorText}`);
     }
 
-    const contentType = response.headers.get("content-type");
-    if (contentType?.includes("application/json")) {
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
       return (await response.json()) as T;
     }
-    
+
     return (await response.text()) as unknown as T;
   }
 
@@ -71,29 +71,33 @@ export class PhoenixdService {
         capacitySat: number;
         fundingTxId: string;
       }>;
-    }>("GET", "/getinfo");
+    }>('GET', '/getinfo');
   }
 
   async getBalance() {
     return this.request<{
       balanceSat: number;
       feeCreditSat: number;
-    }>("GET", "/getbalance");
+    }>('GET', '/getbalance');
   }
 
   async listChannels() {
-    return this.request<unknown[]>("GET", "/listchannels");
+    return this.request<unknown[]>('GET', '/listchannels');
   }
 
   async closeChannel(params: { channelId: string; address: string; feerateSatByte: number }) {
-    return this.request<string>("POST", "/closechannel", params as unknown as Record<string, unknown>);
+    return this.request<string>(
+      'POST',
+      '/closechannel',
+      params as unknown as Record<string, unknown>
+    );
   }
 
   async estimateLiquidityFees(amountSat: number) {
     return this.request<{
       miningFeeSat: number;
       serviceFeeSat: number;
-    }>("GET", `/estimateliquidityfees?amountSat=${amountSat}`);
+    }>('GET', `/estimateliquidityfees?amountSat=${amountSat}`);
   }
 
   // Payments - Create
@@ -109,15 +113,19 @@ export class PhoenixdService {
       amountSat: number;
       paymentHash: string;
       serialized: string;
-    }>("POST", "/createinvoice", params as unknown as Record<string, unknown>);
+    }>('POST', '/createinvoice', params as unknown as Record<string, unknown>);
   }
 
   async createOffer(params: { description?: string; amountSat?: number }) {
-    return this.request<{ offer: string }>("POST", "/createoffer", params as unknown as Record<string, unknown>);
+    return this.request<{ offer: string }>(
+      'POST',
+      '/createoffer',
+      params as unknown as Record<string, unknown>
+    );
   }
 
   async getLnAddress() {
-    return this.request<string>("GET", "/getlnaddress");
+    return this.request<string>('GET', '/getlnaddress');
   }
 
   // Payments - Pay
@@ -128,7 +136,7 @@ export class PhoenixdService {
       paymentId: string;
       paymentHash: string;
       paymentPreimage: string;
-    }>("POST", "/payinvoice", params as unknown as Record<string, unknown>);
+    }>('POST', '/payinvoice', params as unknown as Record<string, unknown>);
   }
 
   async payOffer(params: { offer: string; amountSat: number; message?: string }) {
@@ -138,7 +146,7 @@ export class PhoenixdService {
       paymentId: string;
       paymentHash: string;
       paymentPreimage: string;
-    }>("POST", "/payoffer", params as unknown as Record<string, unknown>);
+    }>('POST', '/payoffer', params as unknown as Record<string, unknown>);
   }
 
   async payLnAddress(params: { address: string; amountSat: number; message?: string }) {
@@ -148,15 +156,19 @@ export class PhoenixdService {
       paymentId: string;
       paymentHash: string;
       paymentPreimage: string;
-    }>("POST", "/paylnaddress", params as unknown as Record<string, unknown>);
+    }>('POST', '/paylnaddress', params as unknown as Record<string, unknown>);
   }
 
   async sendToAddress(params: { address: string; amountSat: number; feerateSatByte: number }) {
-    return this.request<string>("POST", "/sendtoaddress", params as unknown as Record<string, unknown>);
+    return this.request<string>(
+      'POST',
+      '/sendtoaddress',
+      params as unknown as Record<string, unknown>
+    );
   }
 
   async bumpFee(feerateSatByte: number) {
-    return this.request<string>("POST", "/bumpfee", { feerateSatByte });
+    return this.request<string>('POST', '/bumpfee', { feerateSatByte });
   }
 
   // Payments - List
@@ -177,11 +189,11 @@ export class PhoenixdService {
       });
     }
     const query = queryParams.toString();
-    return this.request<unknown[]>("GET", `/payments/incoming${query ? `?${query}` : ""}`);
+    return this.request<unknown[]>('GET', `/payments/incoming${query ? `?${query}` : ''}`);
   }
 
   async getIncomingPayment(paymentHash: string) {
-    return this.request<unknown>("GET", `/payments/incoming/${paymentHash}`);
+    return this.request<unknown>('GET', `/payments/incoming/${paymentHash}`);
   }
 
   async listOutgoingPayments(params?: {
@@ -200,22 +212,22 @@ export class PhoenixdService {
       });
     }
     const query = queryParams.toString();
-    return this.request<unknown[]>("GET", `/payments/outgoing${query ? `?${query}` : ""}`);
+    return this.request<unknown[]>('GET', `/payments/outgoing${query ? `?${query}` : ''}`);
   }
 
   async getOutgoingPayment(paymentId: string) {
-    return this.request<unknown>("GET", `/payments/outgoing/${paymentId}`);
+    return this.request<unknown>('GET', `/payments/outgoing/${paymentId}`);
   }
 
   async getOutgoingPaymentByHash(paymentHash: string) {
-    return this.request<unknown>("GET", `/payments/outgoingbyhash/${paymentHash}`);
+    return this.request<unknown>('GET', `/payments/outgoingbyhash/${paymentHash}`);
   }
 
   async exportCsv(from?: number, to?: number) {
     const params: Record<string, number | undefined> = {};
     if (from) params.from = from;
     if (to) params.to = to;
-    return this.request<string>("POST", "/export", params);
+    return this.request<string>('POST', '/export', params);
   }
 
   // Decode
@@ -228,14 +240,14 @@ export class PhoenixdService {
       minFinalCltvExpiryDelta: number;
       paymentSecret: string;
       timestampSeconds: number;
-    }>("POST", "/decodeinvoice", { invoice });
+    }>('POST', '/decodeinvoice', { invoice });
   }
 
   async decodeOffer(offer: string) {
     return this.request<{
       chain: string;
       chainHashes: string[];
-    }>("POST", "/decodeoffer", { offer });
+    }>('POST', '/decodeoffer', { offer });
   }
 
   // LNURL
@@ -246,7 +258,7 @@ export class PhoenixdService {
       paymentId: string;
       paymentHash: string;
       paymentPreimage: string;
-    }>("POST", "/lnurlpay", { lnurl, amountSat, message });
+    }>('POST', '/lnurlpay', { lnurl, amountSat, message });
   }
 
   async lnurlWithdraw(lnurl: string) {
@@ -257,10 +269,10 @@ export class PhoenixdService {
       description: string;
       k1: string;
       invoice: string;
-    }>("POST", "/lnurlwithdraw", { lnurl });
+    }>('POST', '/lnurlwithdraw', { lnurl });
   }
 
   async lnurlAuth(lnurl: string) {
-    return this.request<string>("POST", "/lnurlauth", { lnurl });
+    return this.request<string>('POST', '/lnurlauth', { lnurl });
   }
 }

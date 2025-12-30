@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
@@ -19,28 +19,23 @@ import {
   TrendingUp,
   TrendingDown,
   ExternalLink,
-} from "lucide-react";
-import { 
-  getIncomingPayments, 
-  getOutgoingPayments, 
+} from 'lucide-react';
+import {
+  getIncomingPayments,
+  getOutgoingPayments,
   exportPayments,
   type IncomingPayment,
   type OutgoingPayment,
-} from "@/lib/api";
-import { formatSats, cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
-import { PageTabs, type TabItem } from "@/components/ui/page-tabs";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+} from '@/lib/api';
+import { formatSats, cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import { PageTabs, type TabItem } from '@/components/ui/page-tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 type Payment = IncomingPayment | OutgoingPayment;
 
 export default function PaymentsPage() {
-  const [activeTab, setActiveTab] = useState<"incoming" | "outgoing">("incoming");
+  const [activeTab, setActiveTab] = useState<'incoming' | 'outgoing'>('incoming');
   const [incomingPayments, setIncomingPayments] = useState<IncomingPayment[]>([]);
   const [outgoingPayments, setOutgoingPayments] = useState<OutgoingPayment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -59,8 +54,8 @@ export default function PaymentsPage() {
         setIncomingPayments(incoming || []);
         setOutgoingPayments(outgoing || []);
       } catch (error) {
-        console.error("Failed to fetch payments:", error);
-        toast({ variant: "destructive", title: "Error", description: "Failed to load payments" });
+        console.error('Failed to fetch payments:', error);
+        toast({ variant: 'destructive', title: 'Error', description: 'Failed to load payments' });
       } finally {
         setLoading(false);
       }
@@ -73,18 +68,18 @@ export default function PaymentsPage() {
     setExporting(true);
     try {
       const csv = await exportPayments();
-      const blob = new Blob([csv], { type: "text/csv" });
+      const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = `payments-${new Date().toISOString().split("T")[0]}.csv`;
+      a.download = `payments-${new Date().toISOString().split('T')[0]}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast({ title: "Exported!", description: "Payments exported to CSV" });
+      toast({ title: 'Exported!', description: 'Payments exported to CSV' });
     } catch {
-      toast({ variant: "destructive", title: "Error", description: "Failed to export" });
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to export' });
     } finally {
       setExporting(false);
     }
@@ -94,7 +89,7 @@ export default function PaymentsPage() {
     navigator.clipboard.writeText(text);
     setCopiedField(field);
     setTimeout(() => setCopiedField(null), 2000);
-    toast({ title: "Copied!", description: "Copied to clipboard" });
+    toast({ title: 'Copied!', description: 'Copied to clipboard' });
   };
 
   const formatDate = (timestamp: number) => {
@@ -106,7 +101,7 @@ export default function PaymentsPage() {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (days === 0) {
       return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     } else if (days === 1) {
@@ -119,20 +114,16 @@ export default function PaymentsPage() {
   };
 
   const truncateHash = (hash: string) => {
-    if (!hash) return "";
+    if (!hash) return '';
     return `${hash.slice(0, 8)}...${hash.slice(-8)}`;
   };
 
   // Calculate stats
   const totalReceived = incomingPayments
-    .filter(p => p.isPaid)
+    .filter((p) => p.isPaid)
     .reduce((acc, p) => acc + p.receivedSat, 0);
-  const totalSent = outgoingPayments
-    .filter(p => p.isPaid)
-    .reduce((acc, p) => acc + p.sent, 0);
-  const totalFees = outgoingPayments
-    .filter(p => p.isPaid)
-    .reduce((acc, p) => acc + p.fees, 0);
+  const totalSent = outgoingPayments.filter((p) => p.isPaid).reduce((acc, p) => acc + p.sent, 0);
+  const totalFees = outgoingPayments.filter((p) => p.isPaid).reduce((acc, p) => acc + p.fees, 0);
 
   if (loading) {
     return (
@@ -152,7 +143,7 @@ export default function PaymentsPage() {
     );
   }
 
-  const currentPayments = activeTab === "incoming" ? incomingPayments : outgoingPayments;
+  const currentPayments = activeTab === 'incoming' ? incomingPayments : outgoingPayments;
 
   return (
     <>
@@ -161,7 +152,9 @@ export default function PaymentsPage() {
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <h1 className="text-xl md:text-3xl font-bold tracking-tight gradient-text">Payments</h1>
-            <p className="mt-1 text-sm text-muted-foreground hidden md:block">Your payment history</p>
+            <p className="mt-1 text-sm text-muted-foreground hidden md:block">
+              Your payment history
+            </p>
           </div>
           <button
             onClick={handleExport}
@@ -183,31 +176,37 @@ export default function PaymentsPage() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-[10px] md:text-sm text-muted-foreground">Received</p>
-                <p className="text-sm md:text-2xl font-bold text-success mt-0.5 md:mt-1 truncate">{formatSats(totalReceived)}</p>
+                <p className="text-sm md:text-2xl font-bold text-success mt-0.5 md:mt-1 truncate">
+                  {formatSats(totalReceived)}
+                </p>
               </div>
               <div className="hidden md:flex h-12 w-12 rounded-xl bg-success/10 items-center justify-center group-hover:scale-110 transition-transform">
                 <TrendingUp className="h-6 w-6 text-success" />
               </div>
             </div>
           </div>
-          
+
           <div className="glass-card rounded-xl md:rounded-2xl p-3 md:p-5 group md:hover:scale-[1.02] transition-all">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-[10px] md:text-sm text-muted-foreground">Sent</p>
-                <p className="text-sm md:text-2xl font-bold text-primary mt-0.5 md:mt-1 truncate">{formatSats(totalSent)}</p>
+                <p className="text-sm md:text-2xl font-bold text-primary mt-0.5 md:mt-1 truncate">
+                  {formatSats(totalSent)}
+                </p>
               </div>
               <div className="hidden md:flex h-12 w-12 rounded-xl bg-primary/10 items-center justify-center group-hover:scale-110 transition-transform">
                 <TrendingDown className="h-6 w-6 text-primary" />
               </div>
             </div>
           </div>
-          
+
           <div className="glass-card rounded-xl md:rounded-2xl p-3 md:p-5 group md:hover:scale-[1.02] transition-all">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-[10px] md:text-sm text-muted-foreground">Fees</p>
-                <p className="text-sm md:text-2xl font-bold text-muted-foreground mt-0.5 md:mt-1 truncate">{formatSats(totalFees)}</p>
+                <p className="text-sm md:text-2xl font-bold text-muted-foreground mt-0.5 md:mt-1 truncate">
+                  {formatSats(totalFees)}
+                </p>
               </div>
               <div className="hidden md:flex h-12 w-12 rounded-xl bg-white/5 items-center justify-center group-hover:scale-110 transition-transform">
                 <Zap className="h-6 w-6 text-muted-foreground" />
@@ -218,24 +217,28 @@ export default function PaymentsPage() {
 
         {/* Tab Switcher */}
         <PageTabs
-          tabs={[
-            { 
-              id: "incoming", 
-              label: "Incoming", 
-              icon: ArrowDownToLine, 
-              count: incomingPayments.length,
-              activeClassName: "bg-gradient-to-r from-success to-emerald-600 text-white shadow-lg shadow-success/25"
-            },
-            { 
-              id: "outgoing", 
-              label: "Outgoing", 
-              icon: ArrowUpFromLine, 
-              count: outgoingPayments.length,
-              activeClassName: "bg-gradient-to-r from-primary to-orange-600 text-white shadow-lg shadow-primary/25"
-            },
-          ] as TabItem[]}
+          tabs={
+            [
+              {
+                id: 'incoming',
+                label: 'Incoming',
+                icon: ArrowDownToLine,
+                count: incomingPayments.length,
+                activeClassName:
+                  'bg-gradient-to-r from-success to-emerald-600 text-white shadow-lg shadow-success/25',
+              },
+              {
+                id: 'outgoing',
+                label: 'Outgoing',
+                icon: ArrowUpFromLine,
+                count: outgoingPayments.length,
+                activeClassName:
+                  'bg-gradient-to-r from-primary to-orange-600 text-white shadow-lg shadow-primary/25',
+              },
+            ] as TabItem[]
+          }
           activeTab={activeTab}
-          onTabChange={(tab) => setActiveTab(tab as "incoming" | "outgoing")}
+          onTabChange={(tab) => setActiveTab(tab as 'incoming' | 'outgoing')}
         />
 
         {/* Payment List */}
@@ -244,20 +247,18 @@ export default function PaymentsPage() {
             <div className="glass-card rounded-3xl p-16 text-center">
               <div className="flex flex-col items-center gap-4">
                 <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/5">
-                  {activeTab === "incoming" ? (
+                  {activeTab === 'incoming' ? (
                     <ArrowDownToLine className="h-10 w-10 text-muted-foreground" />
                   ) : (
                     <ArrowUpFromLine className="h-10 w-10 text-muted-foreground" />
                   )}
                 </div>
-                <p className="text-lg text-muted-foreground">
-                  No {activeTab} payments yet
-                </p>
+                <p className="text-lg text-muted-foreground">No {activeTab} payments yet</p>
               </div>
             </div>
           ) : (
             <div className="space-y-3">
-              {activeTab === "incoming" 
+              {activeTab === 'incoming'
                 ? incomingPayments.map((payment, index) => (
                     <button
                       key={payment.paymentHash}
@@ -266,16 +267,20 @@ export default function PaymentsPage() {
                       style={{ animationDelay: `${index * 30}ms` }}
                     >
                       {/* Icon */}
-                      <div className={cn(
-                        "flex h-10 w-10 md:h-14 md:w-14 items-center justify-center rounded-xl md:rounded-2xl shrink-0 transition-transform group-hover:scale-110",
-                        payment.isPaid 
-                          ? "bg-gradient-to-br from-success/20 to-emerald-600/20" 
-                          : "bg-yellow-500/10"
-                      )}>
-                        <ArrowDownToLine className={cn(
-                          "h-4 w-4 md:h-6 md:w-6",
-                          payment.isPaid ? "text-success" : "text-yellow-500"
-                        )} />
+                      <div
+                        className={cn(
+                          'flex h-10 w-10 md:h-14 md:w-14 items-center justify-center rounded-xl md:rounded-2xl shrink-0 transition-transform group-hover:scale-110',
+                          payment.isPaid
+                            ? 'bg-gradient-to-br from-success/20 to-emerald-600/20'
+                            : 'bg-yellow-500/10'
+                        )}
+                      >
+                        <ArrowDownToLine
+                          className={cn(
+                            'h-4 w-4 md:h-6 md:w-6',
+                            payment.isPaid ? 'text-success' : 'text-yellow-500'
+                          )}
+                        />
                       </div>
 
                       {/* Content */}
@@ -284,13 +289,15 @@ export default function PaymentsPage() {
                           <span className="font-bold text-sm md:text-lg text-success">
                             +{formatSats(payment.receivedSat)}
                           </span>
-                          <span className={cn(
-                            "text-[10px] md:text-xs px-2 md:px-2.5 py-0.5 md:py-1 rounded-full font-medium",
-                            payment.isPaid 
-                              ? "bg-success/10 text-success" 
-                              : "bg-yellow-500/10 text-yellow-500"
-                          )}>
-                            {payment.isPaid ? "Received" : "Pending"}
+                          <span
+                            className={cn(
+                              'text-[10px] md:text-xs px-2 md:px-2.5 py-0.5 md:py-1 rounded-full font-medium',
+                              payment.isPaid
+                                ? 'bg-success/10 text-success'
+                                : 'bg-yellow-500/10 text-yellow-500'
+                            )}
+                          >
+                            {payment.isPaid ? 'Received' : 'Pending'}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground">
@@ -314,16 +321,20 @@ export default function PaymentsPage() {
                       style={{ animationDelay: `${index * 30}ms` }}
                     >
                       {/* Icon */}
-                      <div className={cn(
-                        "flex h-10 w-10 md:h-14 md:w-14 items-center justify-center rounded-xl md:rounded-2xl shrink-0 transition-transform group-hover:scale-110",
-                        payment.isPaid 
-                          ? "bg-gradient-to-br from-primary/20 to-orange-600/20" 
-                          : "bg-yellow-500/10"
-                      )}>
-                        <ArrowUpFromLine className={cn(
-                          "h-4 w-4 md:h-6 md:w-6",
-                          payment.isPaid ? "text-primary" : "text-yellow-500"
-                        )} />
+                      <div
+                        className={cn(
+                          'flex h-10 w-10 md:h-14 md:w-14 items-center justify-center rounded-xl md:rounded-2xl shrink-0 transition-transform group-hover:scale-110',
+                          payment.isPaid
+                            ? 'bg-gradient-to-br from-primary/20 to-orange-600/20'
+                            : 'bg-yellow-500/10'
+                        )}
+                      >
+                        <ArrowUpFromLine
+                          className={cn(
+                            'h-4 w-4 md:h-6 md:w-6',
+                            payment.isPaid ? 'text-primary' : 'text-yellow-500'
+                          )}
+                        />
                       </div>
 
                       {/* Content */}
@@ -332,13 +343,15 @@ export default function PaymentsPage() {
                           <span className="font-bold text-sm md:text-lg">
                             -{formatSats(payment.sent)}
                           </span>
-                          <span className={cn(
-                            "text-[10px] md:text-xs px-2 md:px-2.5 py-0.5 md:py-1 rounded-full font-medium",
-                            payment.isPaid 
-                              ? "bg-success/10 text-success" 
-                              : "bg-yellow-500/10 text-yellow-500"
-                          )}>
-                            {payment.isPaid ? "Sent" : "Pending"}
+                          <span
+                            className={cn(
+                              'text-[10px] md:text-xs px-2 md:px-2.5 py-0.5 md:py-1 rounded-full font-medium',
+                              payment.isPaid
+                                ? 'bg-success/10 text-success'
+                                : 'bg-yellow-500/10 text-yellow-500'
+                            )}
+                          >
+                            {payment.isPaid ? 'Sent' : 'Pending'}
                           </span>
                           {payment.fees > 0 && (
                             <span className="text-[10px] md:text-xs text-muted-foreground hidden sm:inline">
@@ -355,8 +368,7 @@ export default function PaymentsPage() {
                       {/* Arrow */}
                       <ChevronRight className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground group-hover:text-foreground transition-colors shrink-0" />
                     </button>
-                  ))
-              }
+                  ))}
             </div>
           )}
         </div>
@@ -367,12 +379,14 @@ export default function PaymentsPage() {
         <DialogContent className="max-w-xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <div className={cn(
-                "h-12 w-12 rounded-xl flex items-center justify-center",
-                selectedPayment && 'paymentHash' in selectedPayment
-                  ? "bg-gradient-to-br from-success/20 to-emerald-600/20"
-                  : "bg-gradient-to-br from-primary/20 to-orange-600/20"
-              )}>
+              <div
+                className={cn(
+                  'h-12 w-12 rounded-xl flex items-center justify-center',
+                  selectedPayment && 'paymentHash' in selectedPayment
+                    ? 'bg-gradient-to-br from-success/20 to-emerald-600/20'
+                    : 'bg-gradient-to-br from-primary/20 to-orange-600/20'
+                )}
+              >
                 {selectedPayment && 'paymentHash' in selectedPayment ? (
                   <ArrowDownToLine className="h-6 w-6 text-success" />
                 ) : (
@@ -380,11 +394,10 @@ export default function PaymentsPage() {
                 )}
               </div>
               <div>
-                <DialogTitle className="text-xl">
-                  Payment Details
-                </DialogTitle>
+                <DialogTitle className="text-xl">Payment Details</DialogTitle>
                 <p className="text-sm text-muted-foreground">
-                  {selectedPayment && 'paymentHash' in selectedPayment ? 'Incoming' : 'Outgoing'} Payment
+                  {selectedPayment && 'paymentHash' in selectedPayment ? 'Incoming' : 'Outgoing'}{' '}
+                  Payment
                 </p>
               </div>
             </div>
@@ -399,9 +412,7 @@ export default function PaymentsPage() {
                     +{formatSats(selectedPayment.receivedSat)}
                   </p>
                 ) : (
-                  <p className="text-4xl font-bold">
-                    -{formatSats(selectedPayment.sent)}
-                  </p>
+                  <p className="text-4xl font-bold">-{formatSats(selectedPayment.sent)}</p>
                 )}
                 {'fees' in selectedPayment && selectedPayment.fees > 0 && (
                   <p className="text-sm text-muted-foreground mt-2">
@@ -417,13 +428,19 @@ export default function PaymentsPage() {
                   icon={<Zap className="h-4 w-4" />}
                   label="Status"
                   value={
-                    <span className={cn(
-                      "px-3 py-1 rounded-full text-sm font-medium",
-                      selectedPayment.isPaid 
-                        ? "bg-success/10 text-success" 
-                        : "bg-yellow-500/10 text-yellow-500"
-                    )}>
-                      {selectedPayment.isPaid ? ('receivedSat' in selectedPayment ? "Received" : "Sent") : "Pending"}
+                    <span
+                      className={cn(
+                        'px-3 py-1 rounded-full text-sm font-medium',
+                        selectedPayment.isPaid
+                          ? 'bg-success/10 text-success'
+                          : 'bg-yellow-500/10 text-yellow-500'
+                      )}
+                    >
+                      {selectedPayment.isPaid
+                        ? 'receivedSat' in selectedPayment
+                          ? 'Received'
+                          : 'Sent'
+                        : 'Pending'}
                     </span>
                   }
                 />
@@ -571,9 +588,9 @@ function DetailRow({
       </div>
       <div className="flex items-center gap-2">
         {link ? (
-          <a 
-            href={link} 
-            target="_blank" 
+          <a
+            href={link}
+            target="_blank"
             rel="noopener noreferrer"
             className="text-sm font-medium text-primary hover:underline"
           >

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 import {
   Zap,
   Gift,
@@ -11,54 +11,57 @@ import {
   RefreshCw,
   CheckCircle2,
   PartyPopper,
-} from "lucide-react";
-import { QRCodeSVG } from "qrcode.react";
-import confetti from "canvas-confetti";
-import { createInvoice, createOffer } from "@/lib/api";
-import { useToast } from "@/hooks/use-toast";
-import { cn, formatSats } from "@/lib/utils";
-import { PageTabs, type TabItem } from "@/components/ui/page-tabs";
+} from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
+import confetti from 'canvas-confetti';
+import { createInvoice, createOffer } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
+import { formatSats } from '@/lib/utils';
+import { PageTabs, type TabItem } from '@/components/ui/page-tabs';
 
 // Success sound using Web Audio API
 const playSuccessSound = () => {
   try {
-    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
-    
+    const audioContext = new (
+      window.AudioContext ||
+      (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    )();
+
     // Create a pleasant "ding" sound
     const oscillator = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     oscillator.frequency.setValueAtTime(880, audioContext.currentTime); // A5
-    oscillator.type = "sine";
-    
+    oscillator.type = 'sine';
+
     gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-    
+
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.5);
-    
+
     // Second note (higher)
     setTimeout(() => {
       const osc2 = audioContext.createOscillator();
       const gain2 = audioContext.createGain();
-      
+
       osc2.connect(gain2);
       gain2.connect(audioContext.destination);
-      
+
       osc2.frequency.setValueAtTime(1318.5, audioContext.currentTime); // E6
-      osc2.type = "sine";
-      
+      osc2.type = 'sine';
+
       gain2.gain.setValueAtTime(0.3, audioContext.currentTime);
       gain2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.8);
-      
+
       osc2.start(audioContext.currentTime);
       osc2.stop(audioContext.currentTime + 0.8);
     }, 150);
-  } catch (e) {
-    console.log("Audio not supported");
+  } catch {
+    console.log('Audio not supported');
   }
 };
 
@@ -81,36 +84,39 @@ const fireConfetti = () => {
   fire(0.25, {
     spread: 26,
     startVelocity: 55,
-    colors: ["#f97316", "#fb923c", "#fdba74"],
+    colors: ['#f97316', '#fb923c', '#fdba74'],
   });
   fire(0.2, {
     spread: 60,
-    colors: ["#22c55e", "#4ade80", "#86efac"],
+    colors: ['#22c55e', '#4ade80', '#86efac'],
   });
   fire(0.35, {
     spread: 100,
     decay: 0.91,
     scalar: 0.8,
-    colors: ["#eab308", "#facc15", "#fde047"],
+    colors: ['#eab308', '#facc15', '#fde047'],
   });
   fire(0.1, {
     spread: 120,
     startVelocity: 25,
     decay: 0.92,
     scalar: 1.2,
-    colors: ["#f97316", "#22c55e", "#eab308"],
+    colors: ['#f97316', '#22c55e', '#eab308'],
   });
   fire(0.1, {
     spread: 120,
     startVelocity: 45,
-    colors: ["#ffffff", "#fef3c7"],
+    colors: ['#ffffff', '#fef3c7'],
   });
 };
 
 export default function ReceivePage() {
-  const [activeTab, setActiveTab] = useState<"invoice" | "offer">("invoice");
+  const [activeTab, setActiveTab] = useState<'invoice' | 'offer'>('invoice');
   const [loading, setLoading] = useState(false);
-  const [invoiceResult, setInvoiceResult] = useState<{ serialized: string; paymentHash: string } | null>(null);
+  const [invoiceResult, setInvoiceResult] = useState<{
+    serialized: string;
+    paymentHash: string;
+  } | null>(null);
   const [offerResult, setOfferResult] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [isPaid, setIsPaid] = useState(false);
@@ -119,17 +125,17 @@ export default function ReceivePage() {
   const wsRef = useRef<WebSocket | null>(null);
 
   // Invoice form state
-  const [invoiceAmount, setInvoiceAmount] = useState("");
-  const [invoiceDescription, setInvoiceDescription] = useState("");
+  const [invoiceAmount, setInvoiceAmount] = useState('');
+  const [invoiceDescription, setInvoiceDescription] = useState('');
 
   // Offer form state
-  const [offerDescription, setOfferDescription] = useState("");
+  const [offerDescription, setOfferDescription] = useState('');
 
   // Listen for payment received via WebSocket
   useEffect(() => {
     if (!invoiceResult?.paymentHash) return;
 
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:4001";
+    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4001';
     const ws = new WebSocket(`${wsUrl}/ws`);
     wsRef.current = ws;
 
@@ -137,10 +143,10 @@ export default function ReceivePage() {
       try {
         const data = JSON.parse(event.data);
         // Check if this payment matches our invoice
-        if (data.type === "payment_received" && data.paymentHash === invoiceResult.paymentHash) {
+        if (data.type === 'payment_received' && data.paymentHash === invoiceResult.paymentHash) {
           setIsPaid(true);
           setPaidAmount(data.amountSat || parseInt(invoiceAmount));
-          
+
           // Fire confetti and play sound
           setTimeout(() => {
             fireConfetti();
@@ -148,7 +154,7 @@ export default function ReceivePage() {
           }, 100);
         }
       } catch (e) {
-        console.error("WebSocket parse error:", e);
+        console.error('WebSocket parse error:', e);
       }
     };
 
@@ -162,7 +168,7 @@ export default function ReceivePage() {
   const handleCreateInvoice = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!invoiceAmount) {
-      toast({ variant: "destructive", title: "Error", description: "Amount is required" });
+      toast({ variant: 'destructive', title: 'Error', description: 'Amount is required' });
       return;
     }
 
@@ -174,9 +180,9 @@ export default function ReceivePage() {
         description: invoiceDescription || undefined,
       });
       setInvoiceResult(result);
-      toast({ title: "Invoice Created!", description: "Ready to receive payment" });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to create invoice" });
+      toast({ title: 'Invoice Created!', description: 'Ready to receive payment' });
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to create invoice' });
     } finally {
       setLoading(false);
     }
@@ -188,9 +194,9 @@ export default function ReceivePage() {
     try {
       const result = await createOffer({ description: offerDescription || undefined });
       setOfferResult(result.offer);
-      toast({ title: "Offer Created!", description: "Share this reusable offer" });
-    } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to create offer" });
+      toast({ title: 'Offer Created!', description: 'Share this reusable offer' });
+    } catch {
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to create offer' });
     } finally {
       setLoading(false);
     }
@@ -200,25 +206,25 @@ export default function ReceivePage() {
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    toast({ title: "Copied!", description: "Copied to clipboard" });
+    toast({ title: 'Copied!', description: 'Copied to clipboard' });
   };
 
   const resetInvoice = () => {
     setInvoiceResult(null);
-    setInvoiceAmount("");
-    setInvoiceDescription("");
+    setInvoiceAmount('');
+    setInvoiceDescription('');
     setIsPaid(false);
     setPaidAmount(0);
   };
 
   const resetOffer = () => {
     setOfferResult(null);
-    setOfferDescription("");
+    setOfferDescription('');
   };
 
   const tabs: TabItem[] = [
-    { id: "invoice", label: "Invoice", icon: Zap },
-    { id: "offer", label: "Offer", icon: Gift },
+    { id: 'invoice', label: 'Invoice', icon: Zap },
+    { id: 'offer', label: 'Offer', icon: Gift },
   ];
 
   return (
@@ -237,11 +243,11 @@ export default function ReceivePage() {
       <PageTabs
         tabs={tabs}
         activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab as "invoice" | "offer")}
+        onTabChange={(tab) => setActiveTab(tab as 'invoice' | 'offer')}
       />
 
       {/* Invoice Tab */}
-      {activeTab === "invoice" && (
+      {activeTab === 'invoice' && (
         <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
           {/* Form */}
           <div className="glass-card rounded-xl md:rounded-2xl p-4 md:p-5">
@@ -308,7 +314,10 @@ export default function ReceivePage() {
                 <div className="relative mb-4 md:mb-6">
                   <div className="absolute inset-0 rounded-full bg-success/20 animate-ping" />
                   <div className="relative flex h-16 w-16 md:h-24 md:w-24 items-center justify-center rounded-full bg-gradient-to-br from-success to-emerald-600 shadow-lg shadow-success/30">
-                    <CheckCircle2 className="h-8 w-8 md:h-12 md:w-12 text-white" strokeWidth={2.5} />
+                    <CheckCircle2
+                      className="h-8 w-8 md:h-12 md:w-12 text-white"
+                      strokeWidth={2.5}
+                    />
                   </div>
                 </div>
 
@@ -422,7 +431,7 @@ export default function ReceivePage() {
       )}
 
       {/* Offer Tab */}
-      {activeTab === "offer" && (
+      {activeTab === 'offer' && (
         <div className="grid gap-4 md:gap-6 lg:grid-cols-2">
           {/* Form */}
           <div className="glass-card rounded-xl md:rounded-2xl p-4 md:p-5">

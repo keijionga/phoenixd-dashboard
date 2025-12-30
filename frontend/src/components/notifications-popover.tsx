@@ -1,20 +1,12 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import {
-  ArrowDownToLine,
-  ArrowUpFromLine,
-  Bell,
-  Check,
-  Trash2,
-  X,
-  Zap,
-} from "lucide-react";
-import { cn, formatSats } from "@/lib/utils";
+import React from 'react';
+import { ArrowDownToLine, ArrowUpFromLine, Bell, Check, Trash2, X, Zap } from 'lucide-react';
+import { cn, formatSats } from '@/lib/utils';
 
 export interface Notification {
   id: string;
-  type: "payment_received" | "payment_sent" | "channel" | "info";
+  type: 'payment_received' | 'payment_sent' | 'channel' | 'info';
   title: string;
   message: string;
   amount?: number;
@@ -51,20 +43,20 @@ export function NotificationsPopover({
     const hours = Math.floor(diff / 3600000);
     const days = Math.floor(diff / 86400000);
 
-    if (minutes < 1) return "Just now";
+    if (minutes < 1) return 'Just now';
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
     return date.toLocaleDateString();
   };
 
-  const getIcon = (type: Notification["type"]) => {
+  const getIcon = (type: Notification['type']) => {
     switch (type) {
-      case "payment_received":
+      case 'payment_received':
         return <ArrowDownToLine className="h-4 w-4 text-success" />;
-      case "payment_sent":
+      case 'payment_sent':
         return <ArrowUpFromLine className="h-4 w-4 text-primary" />;
-      case "channel":
+      case 'channel':
         return <Zap className="h-4 w-4 text-lightning" />;
       default:
         return <Bell className="h-4 w-4 text-muted-foreground" />;
@@ -76,10 +68,7 @@ export function NotificationsPopover({
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-40"
-        onClick={() => onOpenChange(false)}
-      />
+      <div className="fixed inset-0 z-40" onClick={() => onOpenChange(false)} />
 
       {/* Popover */}
       <div className="absolute right-0 top-full mt-2 z-50 w-80 sm:w-96">
@@ -130,9 +119,7 @@ export function NotificationsPopover({
                   <Bell className="h-6 w-6 text-muted-foreground" />
                 </div>
                 <p className="text-sm text-muted-foreground">No notifications</p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  You&apos;re all caught up!
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">You&apos;re all caught up!</p>
               </div>
             ) : (
               <div className="py-1">
@@ -140,18 +127,18 @@ export function NotificationsPopover({
                   <div
                     key={notification.id}
                     className={cn(
-                      "flex items-start gap-3 px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer group",
-                      !notification.read && "bg-primary/5"
+                      'flex items-start gap-3 px-4 py-3 hover:bg-black/5 dark:hover:bg-white/5 transition-colors cursor-pointer group',
+                      !notification.read && 'bg-primary/5'
                     )}
                     onClick={() => onMarkAsRead(notification.id)}
                   >
                     <div
                       className={cn(
-                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-                        notification.type === "payment_received" && "bg-success/10",
-                        notification.type === "payment_sent" && "bg-primary/10",
-                        notification.type === "channel" && "bg-lightning/10",
-                        notification.type === "info" && "bg-black/5 dark:bg-white/5"
+                        'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl',
+                        notification.type === 'payment_received' && 'bg-success/10',
+                        notification.type === 'payment_sent' && 'bg-primary/10',
+                        notification.type === 'channel' && 'bg-lightning/10',
+                        notification.type === 'info' && 'bg-black/5 dark:bg-white/5'
                       )}
                     >
                       {getIcon(notification.type)}
@@ -176,22 +163,20 @@ export function NotificationsPopover({
                         {notification.amount !== undefined && (
                           <span
                             className={cn(
-                              "text-xs font-medium",
-                              notification.type === "payment_received"
-                                ? "text-success"
-                                : "text-primary"
+                              'text-xs font-medium',
+                              notification.type === 'payment_received'
+                                ? 'text-success'
+                                : 'text-primary'
                             )}
                           >
-                            {notification.type === "payment_received" ? "+" : "-"}
+                            {notification.type === 'payment_received' ? '+' : '-'}
                             {formatSats(notification.amount)}
                           </span>
                         )}
                         <span className="text-xs text-muted-foreground">
                           {formatTime(notification.timestamp)}
                         </span>
-                        {!notification.read && (
-                          <span className="h-2 w-2 rounded-full bg-primary" />
-                        )}
+                        {!notification.read && <span className="h-2 w-2 rounded-full bg-primary" />}
                       </div>
                     </div>
                   </div>
