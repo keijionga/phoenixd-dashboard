@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 interface PaymentEvent {
   type: string;
@@ -34,7 +34,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
       }
 
       connectingRef.current = true;
-      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:4001";
+      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:4001';
 
       try {
         const ws = new WebSocket(`${wsUrl}/ws`);
@@ -46,7 +46,7 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
             return;
           }
           connectingRef.current = false;
-          console.log("WebSocket connected");
+          console.log('WebSocket connected');
           setIsConnected(true);
           options.onConnect?.();
         };
@@ -55,21 +55,21 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
           if (!mountedRef.current) return;
           try {
             const data = JSON.parse(event.data) as PaymentEvent;
-            if (data.type === "payment_received") {
+            if (data.type === 'payment_received') {
               options.onPaymentReceived?.(data);
             }
           } catch (error) {
-            console.error("Error parsing WebSocket message:", error);
+            console.error('Error parsing WebSocket message:', error);
           }
         };
 
         ws.onclose = () => {
           connectingRef.current = false;
           wsRef.current = null;
-          
+
           if (!mountedRef.current) return;
-          
-          console.log("WebSocket disconnected");
+
+          console.log('WebSocket disconnected');
           setIsConnected(false);
           options.onDisconnect?.();
 
@@ -81,12 +81,12 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
 
         ws.onerror = () => {
           connectingRef.current = false;
-          console.error("WebSocket error");
+          console.error('WebSocket error');
         };
       } catch (error) {
         connectingRef.current = false;
-        console.error("Error connecting to WebSocket:", error);
-        
+        console.error('Error connecting to WebSocket:', error);
+
         if (mountedRef.current) {
           reconnectTimeoutRef.current = setTimeout(connect, 5000);
         }
@@ -98,18 +98,18 @@ export function useWebSocket(options: UseWebSocketOptions = {}) {
     return () => {
       mountedRef.current = false;
       connectingRef.current = false;
-      
+
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current);
         reconnectTimeoutRef.current = null;
       }
-      
+
       if (wsRef.current) {
         wsRef.current.close();
         wsRef.current = null;
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Run only once on mount
 
   return { isConnected };

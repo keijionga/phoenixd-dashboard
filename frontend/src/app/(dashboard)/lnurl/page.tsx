@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState } from "react";
+import { useState } from 'react';
 import {
   Link2,
   ArrowDownToLine,
@@ -9,33 +9,35 @@ import {
   Loader2,
   Check,
   AlertCircle,
-} from "lucide-react";
-import { lnurlPay, lnurlWithdraw, lnurlAuth } from "@/lib/api";
-import { cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
-import { PageTabs, type TabItem } from "@/components/ui/page-tabs";
+} from 'lucide-react';
+import { lnurlPay, lnurlWithdraw, lnurlAuth } from '@/lib/api';
+import { cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import { PageTabs, type TabItem } from '@/components/ui/page-tabs';
 
 export default function LnurlPage() {
-  const [activeTab, setActiveTab] = useState<"pay" | "withdraw" | "auth">("pay");
+  const [activeTab, setActiveTab] = useState<'pay' | 'withdraw' | 'auth'>('pay');
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ success: boolean; data?: unknown; error?: string } | null>(null);
+  const [result, setResult] = useState<{ success: boolean; data?: unknown; error?: string } | null>(
+    null
+  );
   const { toast } = useToast();
 
   // LNURL-Pay
-  const [payUrl, setPayUrl] = useState("");
-  const [payAmount, setPayAmount] = useState("");
-  const [payMessage, setPayMessage] = useState("");
+  const [payUrl, setPayUrl] = useState('');
+  const [payAmount, setPayAmount] = useState('');
+  const [payMessage, setPayMessage] = useState('');
 
   // LNURL-Withdraw
-  const [withdrawUrl, setWithdrawUrl] = useState("");
+  const [withdrawUrl, setWithdrawUrl] = useState('');
 
   // LNURL-Auth
-  const [authUrl, setAuthUrl] = useState("");
+  const [authUrl, setAuthUrl] = useState('');
 
   const handleLnurlPay = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!payUrl || !payAmount) {
-      toast({ variant: "destructive", title: "Error", description: "URL and amount are required" });
+      toast({ variant: 'destructive', title: 'Error', description: 'URL and amount are required' });
       return;
     }
 
@@ -48,13 +50,13 @@ export default function LnurlPage() {
         message: payMessage || undefined,
       });
       setResult({ success: true, data });
-      setPayUrl("");
-      setPayAmount("");
-      setPayMessage("");
-      toast({ title: "Success!", description: "LNURL-Pay completed" });
+      setPayUrl('');
+      setPayAmount('');
+      setPayMessage('');
+      toast({ title: 'Success!', description: 'LNURL-Pay completed' });
     } catch (error) {
       setResult({ success: false, error: String(error) });
-      toast({ variant: "destructive", title: "Error", description: String(error) });
+      toast({ variant: 'destructive', title: 'Error', description: String(error) });
     } finally {
       setLoading(false);
     }
@@ -63,7 +65,7 @@ export default function LnurlPage() {
   const handleLnurlWithdraw = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!withdrawUrl) {
-      toast({ variant: "destructive", title: "Error", description: "URL is required" });
+      toast({ variant: 'destructive', title: 'Error', description: 'URL is required' });
       return;
     }
 
@@ -72,11 +74,11 @@ export default function LnurlPage() {
     try {
       const data = await lnurlWithdraw({ lnurl: withdrawUrl });
       setResult({ success: true, data });
-      setWithdrawUrl("");
-      toast({ title: "Success!", description: "LNURL-Withdraw completed" });
+      setWithdrawUrl('');
+      toast({ title: 'Success!', description: 'LNURL-Withdraw completed' });
     } catch (error) {
       setResult({ success: false, error: String(error) });
-      toast({ variant: "destructive", title: "Error", description: String(error) });
+      toast({ variant: 'destructive', title: 'Error', description: String(error) });
     } finally {
       setLoading(false);
     }
@@ -85,7 +87,7 @@ export default function LnurlPage() {
   const handleLnurlAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authUrl) {
-      toast({ variant: "destructive", title: "Error", description: "URL is required" });
+      toast({ variant: 'destructive', title: 'Error', description: 'URL is required' });
       return;
     }
 
@@ -94,20 +96,20 @@ export default function LnurlPage() {
     try {
       const data = await lnurlAuth({ lnurl: authUrl });
       setResult({ success: true, data });
-      setAuthUrl("");
-      toast({ title: "Success!", description: "LNURL-Auth completed" });
+      setAuthUrl('');
+      toast({ title: 'Success!', description: 'LNURL-Auth completed' });
     } catch (error) {
       setResult({ success: false, error: String(error) });
-      toast({ variant: "destructive", title: "Error", description: String(error) });
+      toast({ variant: 'destructive', title: 'Error', description: String(error) });
     } finally {
       setLoading(false);
     }
   };
 
   const tabs: TabItem[] = [
-    { id: "pay", label: "Pay", icon: ArrowUpFromLine },
-    { id: "withdraw", label: "Withdraw", icon: ArrowDownToLine },
-    { id: "auth", label: "Auth", icon: Key },
+    { id: 'pay', label: 'Pay', icon: ArrowUpFromLine },
+    { id: 'withdraw', label: 'Withdraw', icon: ArrowDownToLine },
+    { id: 'auth', label: 'Auth', icon: Key },
   ];
 
   return (
@@ -115,22 +117,20 @@ export default function LnurlPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">LNURL</h1>
-        <p className="mt-1 text-muted-foreground">
-          Pay, withdraw, and authenticate with LNURL
-        </p>
+        <p className="mt-1 text-muted-foreground">Pay, withdraw, and authenticate with LNURL</p>
       </div>
 
       {/* Tab Switcher */}
       <PageTabs
         tabs={tabs}
         activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab as "pay" | "withdraw" | "auth")}
+        onTabChange={(tab) => setActiveTab(tab as 'pay' | 'withdraw' | 'auth')}
       />
 
       {/* Forms */}
       <div className="max-w-2xl">
         {/* LNURL-Pay */}
-        {activeTab === "pay" && (
+        {activeTab === 'pay' && (
           <div className="glass-card rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
@@ -138,7 +138,9 @@ export default function LnurlPage() {
               </div>
               <div>
                 <h3 className="font-semibold">LNURL-Pay</h3>
-                <p className="text-sm text-muted-foreground">Pay using LNURL or Lightning Address</p>
+                <p className="text-sm text-muted-foreground">
+                  Pay using LNURL or Lightning Address
+                </p>
               </div>
             </div>
 
@@ -181,15 +183,25 @@ export default function LnurlPage() {
                 />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full flex items-center justify-center gap-2">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Link2 className="h-5 w-5" /> Pay via LNURL</>}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gradient w-full flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Link2 className="h-5 w-5" /> Pay via LNURL
+                  </>
+                )}
               </button>
             </form>
           </div>
         )}
 
         {/* LNURL-Withdraw */}
-        {activeTab === "withdraw" && (
+        {activeTab === 'withdraw' && (
           <div className="glass-card rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-success/10">
@@ -214,15 +226,25 @@ export default function LnurlPage() {
                 />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full flex items-center justify-center gap-2">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><ArrowDownToLine className="h-5 w-5" /> Withdraw</>}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gradient w-full flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <ArrowDownToLine className="h-5 w-5" /> Withdraw
+                  </>
+                )}
               </button>
             </form>
           </div>
         )}
 
         {/* LNURL-Auth */}
-        {activeTab === "auth" && (
+        {activeTab === 'auth' && (
           <div className="glass-card rounded-3xl p-6">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/10">
@@ -247,8 +269,18 @@ export default function LnurlPage() {
                 />
               </div>
 
-              <button type="submit" disabled={loading} className="btn-gradient w-full flex items-center justify-center gap-2">
-                {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <><Key className="h-5 w-5" /> Authenticate</>}
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn-gradient w-full flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Key className="h-5 w-5" /> Authenticate
+                  </>
+                )}
               </button>
             </form>
           </div>
@@ -257,14 +289,18 @@ export default function LnurlPage() {
 
       {/* Result */}
       {result && (
-        <div className={cn(
-          "max-w-2xl glass-card rounded-3xl p-6 flex items-center gap-4",
-          result.success ? "border-success/30" : "border-destructive/30"
-        )}>
-          <div className={cn(
-            "flex h-12 w-12 items-center justify-center rounded-2xl shrink-0",
-            result.success ? "bg-success/10" : "bg-destructive/10"
-          )}>
+        <div
+          className={cn(
+            'max-w-2xl glass-card rounded-3xl p-6 flex items-center gap-4',
+            result.success ? 'border-success/30' : 'border-destructive/30'
+          )}
+        >
+          <div
+            className={cn(
+              'flex h-12 w-12 items-center justify-center rounded-2xl shrink-0',
+              result.success ? 'bg-success/10' : 'bg-destructive/10'
+            )}
+          >
             {result.success ? (
               <Check className="h-6 w-6 text-success" />
             ) : (
@@ -272,8 +308,10 @@ export default function LnurlPage() {
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className={cn("font-semibold", result.success ? "text-success" : "text-destructive")}>
-              {result.success ? "Success!" : "Operation Failed"}
+            <p
+              className={cn('font-semibold', result.success ? 'text-success' : 'text-destructive')}
+            >
+              {result.success ? 'Success!' : 'Operation Failed'}
             </p>
             {result.error && (
               <p className="mt-1 text-sm text-muted-foreground truncate">{result.error}</p>

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Zap,
   ArrowDownToLine,
@@ -11,21 +11,21 @@ import {
   ChevronRight,
   Wrench,
   Link2,
-} from "lucide-react";
-import { 
-  getNodeInfo, 
-  getBalance, 
-  listChannels, 
-  getIncomingPayments, 
+} from 'lucide-react';
+import {
+  getNodeInfo,
+  getBalance,
+  listChannels,
+  getIncomingPayments,
   getOutgoingPayments,
   type Channel,
   type IncomingPayment,
   type OutgoingPayment,
-} from "@/lib/api";
-import { formatSats, cn } from "@/lib/utils";
-import { useToast } from "@/hooks/use-toast";
-import Link from "next/link";
-import { PaymentsChart } from "@/components/payments-chart";
+} from '@/lib/api';
+import { formatSats, cn } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
+import { PaymentsChart } from '@/components/payments-chart';
 
 interface NodeInfo {
   nodeId: string;
@@ -61,17 +61,17 @@ export default function OverviewPage() {
         setChannels(ch);
         setAllIncoming(incoming || []);
         setAllOutgoing(outgoing || []);
-        
+
         // Combine and sort recent payments
         const allPayments = [...(incoming || []), ...(outgoing || [])];
         allPayments.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         setRecentPayments(allPayments.slice(0, 5));
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error('Failed to fetch data:', error);
         toast({
-          variant: "destructive",
-          title: "Error",
-          description: "Failed to load dashboard data",
+          variant: 'destructive',
+          title: 'Error',
+          description: 'Failed to load dashboard data',
         });
       } finally {
         setLoading(false);
@@ -84,14 +84,14 @@ export default function OverviewPage() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     toast({
-      title: "Copied!",
-      description: "Copied to clipboard",
+      title: 'Copied!',
+      description: 'Copied to clipboard',
     });
   };
 
   const totalCapacity = channels.reduce((acc, ch) => acc + (ch.capacitySat || 0), 0);
   const totalInbound = channels.reduce((acc, ch) => acc + (ch.inboundLiquiditySat || 0), 0);
-  const activeChannels = channels.filter(c => c.state === "NORMAL").length;
+  const activeChannels = channels.filter((c) => c.state === 'NORMAL').length;
 
   if (loading) {
     return (
@@ -112,14 +112,16 @@ export default function OverviewPage() {
       <div className="hero-card p-4 md:p-6">
         <div className="relative z-10 flex items-center justify-between">
           <div className="space-y-1 md:space-y-2">
-            <span className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-white/60">Lightning Balance</span>
+            <span className="text-[10px] md:text-xs font-medium uppercase tracking-wider text-white/60">
+              Lightning Balance
+            </span>
             <div className="flex items-baseline gap-1 md:gap-2">
               <span className="text-2xl md:text-4xl font-bold text-white">
                 {formatSats(balance?.balanceSat || 0)}
               </span>
               <span className="text-sm md:text-lg text-white/50">sats</span>
             </div>
-            
+
             <div className="flex gap-2 pt-1 md:pt-2">
               <Link href="/receive">
                 <button className="flex items-center gap-1.5 md:gap-2 rounded-xl bg-white px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm font-semibold text-gray-900 transition-transform hover:scale-105">
@@ -135,7 +137,7 @@ export default function OverviewPage() {
               </Link>
             </div>
           </div>
-          
+
           {/* Decorative */}
           <div className="hidden md:block">
             <Zap className="h-24 w-24 text-white/15" strokeWidth={1} />
@@ -172,7 +174,9 @@ export default function OverviewPage() {
         <div className="glass-card rounded-xl md:rounded-2xl p-3 md:p-4">
           <div className="flex items-center justify-between">
             <div className="min-w-0">
-              <p className="text-lg md:text-2xl font-bold text-success truncate">{formatSats(totalInbound)}</p>
+              <p className="text-lg md:text-2xl font-bold text-success truncate">
+                {formatSats(totalInbound)}
+              </p>
               <p className="text-[10px] md:text-xs text-muted-foreground">Inbound</p>
             </div>
             <div className="h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl bg-success/10 flex items-center justify-center flex-shrink-0">
@@ -184,7 +188,9 @@ export default function OverviewPage() {
         <div className="glass-card rounded-xl md:rounded-2xl p-3 md:p-4">
           <div className="flex items-center justify-between">
             <div className="min-w-0">
-              <p className="text-lg md:text-2xl font-bold value-highlight truncate">{formatSats(balance?.feeCreditSat || 0)}</p>
+              <p className="text-lg md:text-2xl font-bold value-highlight truncate">
+                {formatSats(balance?.feeCreditSat || 0)}
+              </p>
               <p className="text-[10px] md:text-xs text-muted-foreground">Fee Credit</p>
             </div>
             <div className="h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl bg-lightning/10 flex items-center justify-center flex-shrink-0">
@@ -195,14 +201,14 @@ export default function OverviewPage() {
       </div>
 
       {/* Payment Activity Chart */}
-      <PaymentsChart 
-        incomingPayments={allIncoming} 
-        outgoingPayments={allOutgoing} 
-      />
+      <PaymentsChart incomingPayments={allIncoming} outgoingPayments={allOutgoing} />
 
       {/* Quick Actions - Horizontal Grid - Hidden on mobile since we have bottom nav */}
       <div className="hidden md:grid gap-3 grid-cols-5">
-        <Link href="/receive" className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group">
+        <Link
+          href="/receive"
+          className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group"
+        >
           <div className="h-10 w-10 rounded-xl bg-success/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
             <ArrowDownToLine className="h-5 w-5 text-success" />
           </div>
@@ -210,7 +216,10 @@ export default function OverviewPage() {
           <p className="text-xs text-muted-foreground">Create invoice</p>
         </Link>
 
-        <Link href="/send" className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group">
+        <Link
+          href="/send"
+          className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group"
+        >
           <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
             <ArrowUpFromLine className="h-5 w-5 text-primary" />
           </div>
@@ -218,7 +227,10 @@ export default function OverviewPage() {
           <p className="text-xs text-muted-foreground">Pay invoice</p>
         </Link>
 
-        <Link href="/channels" className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group">
+        <Link
+          href="/channels"
+          className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group"
+        >
           <div className="h-10 w-10 rounded-xl bg-bitcoin/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
             <Layers className="h-5 w-5 text-bitcoin" />
           </div>
@@ -226,7 +238,10 @@ export default function OverviewPage() {
           <p className="text-xs text-muted-foreground">Manage liquidity</p>
         </Link>
 
-        <Link href="/tools" className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group">
+        <Link
+          href="/tools"
+          className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group"
+        >
           <div className="h-10 w-10 rounded-xl bg-accent/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
             <Wrench className="h-5 w-5 text-accent" />
           </div>
@@ -234,7 +249,10 @@ export default function OverviewPage() {
           <p className="text-xs text-muted-foreground">Decode & fees</p>
         </Link>
 
-        <Link href="/lnurl" className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group">
+        <Link
+          href="/lnurl"
+          className="glass-card rounded-2xl p-4 hover:bg-white/[0.06] transition-colors group"
+        >
           <div className="h-10 w-10 rounded-xl bg-lightning/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
             <Link2 className="h-5 w-5 text-lightning" />
           </div>
@@ -253,7 +271,7 @@ export default function OverviewPage() {
             </div>
             <h3 className="font-semibold text-xs md:text-sm">Node Info</h3>
           </div>
-          
+
           {/* Node ID */}
           <div className="mb-2 md:mb-3">
             <label className="text-[9px] md:text-[10px] font-medium uppercase tracking-wider text-muted-foreground mb-1 block">
@@ -264,7 +282,7 @@ export default function OverviewPage() {
                 {nodeInfo?.nodeId?.slice(0, 12)}...{nodeInfo?.nodeId?.slice(-4)}
               </div>
               <button
-                onClick={() => copyToClipboard(nodeInfo?.nodeId || "")}
+                onClick={() => copyToClipboard(nodeInfo?.nodeId || '')}
                 className="h-7 w-7 md:h-8 md:w-8 rounded-lg bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors flex-shrink-0"
               >
                 <Copy className="h-3 w-3 md:h-3.5 md:w-3.5" />
@@ -283,7 +301,9 @@ export default function OverviewPage() {
             </div>
             <div className="rounded-lg md:rounded-xl bg-white/5 p-2 md:p-3">
               <span className="text-[9px] md:text-[10px] text-muted-foreground block">Version</span>
-              <span className="font-mono text-[10px] md:text-xs font-medium mt-0.5 block truncate">{nodeInfo?.version}</span>
+              <span className="font-mono text-[10px] md:text-xs font-medium mt-0.5 block truncate">
+                {nodeInfo?.version}
+              </span>
             </div>
           </div>
         </div>
@@ -292,31 +312,36 @@ export default function OverviewPage() {
         <div className="lg:col-span-3 glass-card rounded-xl md:rounded-2xl p-3 md:p-4">
           <div className="flex items-center justify-between mb-2 md:mb-3">
             <h3 className="font-semibold text-xs md:text-sm">Recent Payments</h3>
-            <Link href="/payments" className="text-[10px] md:text-xs text-primary hover:underline flex items-center gap-0.5">
+            <Link
+              href="/payments"
+              className="text-[10px] md:text-xs text-primary hover:underline flex items-center gap-0.5"
+            >
               View All <ChevronRight className="h-3 w-3" />
             </Link>
           </div>
-          
+
           {recentPayments.length > 0 ? (
             <div className="space-y-1 md:space-y-1.5">
               {recentPayments.map((payment) => {
-                const isIncoming = "receivedSat" in payment;
-                const amount = isIncoming 
-                  ? (payment as IncomingPayment).receivedSat 
+                const isIncoming = 'receivedSat' in payment;
+                const amount = isIncoming
+                  ? (payment as IncomingPayment).receivedSat
                   : (payment as OutgoingPayment).sent || 0;
-                const key = isIncoming 
-                  ? (payment as IncomingPayment).paymentHash 
+                const key = isIncoming
+                  ? (payment as IncomingPayment).paymentHash
                   : (payment as OutgoingPayment).paymentId;
-                
+
                 return (
                   <div
                     key={key}
                     className="flex items-center gap-2 md:gap-3 p-2 md:p-2.5 rounded-lg md:rounded-xl hover:bg-white/5 transition-colors"
                   >
-                    <div className={cn(
-                      "h-7 w-7 md:h-8 md:w-8 rounded-lg flex items-center justify-center flex-shrink-0",
-                      isIncoming ? "bg-success/10" : "bg-primary/10"
-                    )}>
+                    <div
+                      className={cn(
+                        'h-7 w-7 md:h-8 md:w-8 rounded-lg flex items-center justify-center flex-shrink-0',
+                        isIncoming ? 'bg-success/10' : 'bg-primary/10'
+                      )}
+                    >
                       {isIncoming ? (
                         <ArrowDownToLine className="h-3.5 w-3.5 md:h-4 md:w-4 text-success" />
                       ) : (
@@ -325,24 +350,27 @@ export default function OverviewPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs md:text-sm font-medium">
-                        {isIncoming ? "Received" : "Sent"}
+                        {isIncoming ? 'Received' : 'Sent'}
                       </p>
                       <p className="text-[10px] md:text-xs text-muted-foreground truncate">
-                        {payment.completedAt 
-                          ? new Date(payment.completedAt).toLocaleString([], { 
-                              month: 'short', 
-                              day: 'numeric', 
-                              hour: '2-digit', 
-                              minute: '2-digit' 
+                        {payment.completedAt
+                          ? new Date(payment.completedAt).toLocaleString([], {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
                             })
-                          : "Pending"}
+                          : 'Pending'}
                       </p>
                     </div>
-                    <p className={cn(
-                      "font-mono text-xs md:text-sm font-semibold",
-                      isIncoming ? "text-success" : "text-foreground"
-                    )}>
-                      {isIncoming ? "+" : "-"}{formatSats(amount)}
+                    <p
+                      className={cn(
+                        'font-mono text-xs md:text-sm font-semibold',
+                        isIncoming ? 'text-success' : 'text-foreground'
+                      )}
+                    >
+                      {isIncoming ? '+' : '-'}
+                      {formatSats(amount)}
                     </p>
                   </div>
                 );

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import {
   Home,
   ArrowDownToLine,
@@ -13,22 +13,22 @@ import {
   Link2,
   Settings,
   X,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { SettingsDialog } from "@/components/settings-dialog";
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { SettingsDialog } from '@/components/settings-dialog';
 
 const mainNavItems = [
-  { title: "Home", href: "/", icon: Home },
-  { title: "Receive", href: "/receive", icon: ArrowDownToLine },
-  { title: "Send", href: "/send", icon: ArrowUpFromLine },
-  { title: "Payments", href: "/payments", icon: History },
+  { title: 'Home', href: '/', icon: Home },
+  { title: 'Receive', href: '/receive', icon: ArrowDownToLine },
+  { title: 'Send', href: '/send', icon: ArrowUpFromLine },
+  { title: 'Payments', href: '/payments', icon: History },
 ];
 
 const moreNavItems = [
-  { title: "Channels", href: "/channels", icon: Layers },
-  { title: "Tools", href: "/tools", icon: Wrench },
-  { title: "LNURL", href: "/lnurl", icon: Link2 },
+  { title: 'Channels', href: '/channels', icon: Layers },
+  { title: 'Tools', href: '/tools', icon: Wrench },
+  { title: 'LNURL', href: '/lnurl', icon: Link2 },
 ];
 
 export function BottomNav() {
@@ -53,9 +53,7 @@ export function BottomNav() {
         <div className="fixed bottom-20 left-4 right-4 z-50 md:hidden">
           <div className="glass-card rounded-2xl p-4 space-y-2">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-muted-foreground">
-                More
-              </span>
+              <span className="text-sm font-medium text-muted-foreground">More</span>
               <button
                 onClick={() => setMoreOpen(false)}
                 className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10"
@@ -72,10 +70,10 @@ export function BottomNav() {
                   href={item.href}
                   onClick={() => setMoreOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all",
+                    'flex items-center gap-3 px-4 py-3 rounded-xl transition-all',
                     isActive
-                      ? "bg-primary text-white"
-                      : "hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground"
+                      ? 'bg-primary text-white'
+                      : 'hover:bg-black/5 dark:hover:bg-white/5 text-muted-foreground'
                   )}
                 >
                   <item.icon className="h-5 w-5" />
@@ -114,18 +112,18 @@ export function BottomNav() {
                 >
                   <div
                     className={cn(
-                      "p-2 rounded-xl transition-all",
+                      'p-2 rounded-xl transition-all',
                       isActive
-                        ? "bg-primary text-white shadow-lg shadow-primary/30"
-                        : "text-muted-foreground"
+                        ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                        : 'text-muted-foreground'
                     )}
                   >
                     <item.icon className="h-5 w-5" />
                   </div>
                   <span
                     className={cn(
-                      "text-[10px] font-medium",
-                      isActive ? "text-primary" : "text-muted-foreground"
+                      'text-[10px] font-medium',
+                      isActive ? 'text-primary' : 'text-muted-foreground'
                     )}
                   >
                     {item.title}
@@ -141,20 +139,18 @@ export function BottomNav() {
             >
               <div
                 className={cn(
-                  "p-2 rounded-xl transition-all",
+                  'p-2 rounded-xl transition-all',
                   isMoreActive || moreOpen
-                    ? "bg-primary text-white shadow-lg shadow-primary/30"
-                    : "text-muted-foreground"
+                    ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                    : 'text-muted-foreground'
                 )}
               >
                 <MoreHorizontal className="h-5 w-5" />
               </div>
               <span
                 className={cn(
-                  "text-[10px] font-medium",
-                  isMoreActive || moreOpen
-                    ? "text-primary"
-                    : "text-muted-foreground"
+                  'text-[10px] font-medium',
+                  isMoreActive || moreOpen ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
                 More

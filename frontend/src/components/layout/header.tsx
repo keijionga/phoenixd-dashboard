@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import { RefreshCw, Zap, Search, Bell } from "lucide-react";
-import { getBalance } from "@/lib/api";
-import { formatSats } from "@/lib/utils";
-import { cn } from "@/lib/utils";
-import { SearchDialog } from "@/components/search-dialog";
-import { NotificationsPopover, type Notification } from "@/components/notifications-popover";
+import { useEffect, useState, useCallback } from 'react';
+import { RefreshCw, Zap, Search, Bell } from 'lucide-react';
+import { getBalance } from '@/lib/api';
+import { formatSats } from '@/lib/utils';
+import { cn } from '@/lib/utils';
+import { SearchDialog } from '@/components/search-dialog';
+import { NotificationsPopover, type Notification } from '@/components/notifications-popover';
 
 interface HeaderProps {
   isConnected: boolean;
@@ -23,7 +23,7 @@ interface HeaderProps {
 export function Header({
   isConnected,
   onRefreshBalance,
-  title = "Dashboard",
+  title = 'Dashboard',
   subtitle,
   notifications = [],
   onNotificationRead,
@@ -50,7 +50,7 @@ export function Header({
       }
       setBalance(data);
     } catch (error) {
-      console.error("Error fetching balance:", error);
+      console.error('Error fetching balance:', error);
     } finally {
       setLoading(false);
     }
@@ -60,6 +60,7 @@ export function Header({
     fetchBalance();
     const interval = setInterval(fetchBalance, 30000);
     return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Expose refresh to parent
@@ -72,14 +73,14 @@ export function Header({
   // Keyboard shortcut for search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setSearchOpen(true);
       }
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const handleRefresh = () => {
@@ -102,15 +103,11 @@ export function Header({
             </div>
             <span className="font-bold text-lg">Phoenixd</span>
           </div>
-          
+
           {/* Desktop Title */}
           <div className="hidden md:block">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="text-sm text-muted-foreground">{subtitle}</p>
-            )}
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">{title}</h1>
+            {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
           </div>
         </div>
 
@@ -135,7 +132,7 @@ export function Header({
               <Bell className="h-4 w-4 md:h-5 md:w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
               {unreadCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center h-4 min-w-[16px] px-1 rounded-full bg-primary text-[10px] font-bold text-white border-2 border-background">
-                  {unreadCount > 9 ? "9+" : unreadCount}
+                  {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
               {unreadCount === 0 && isConnected && (
@@ -165,8 +162,8 @@ export function Header({
               </div>
               <span
                 className={cn(
-                  "font-mono text-sm md:text-lg font-bold value-highlight transition-transform",
-                  balanceAnimating && "scale-110"
+                  'font-mono text-sm md:text-lg font-bold value-highlight transition-transform',
+                  balanceAnimating && 'scale-110'
                 )}
               >
                 {formatSats(balance.balanceSat)}
@@ -179,15 +176,11 @@ export function Header({
                 className="hidden md:block ml-1 p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
               >
                 <RefreshCw
-                  className={cn(
-                    "h-4 w-4 text-muted-foreground",
-                    loading && "animate-spin"
-                  )}
+                  className={cn('h-4 w-4 text-muted-foreground', loading && 'animate-spin')}
                 />
               </button>
             </div>
           )}
-
         </div>
       </header>
 

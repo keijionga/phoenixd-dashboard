@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
+import { useEffect, useState } from 'react';
+import { useTheme } from 'next-themes';
 import {
   Settings,
   Zap,
@@ -15,10 +15,10 @@ import {
   Monitor,
   Palette,
   Sparkles,
-} from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { getNodeInfo } from "@/lib/api";
-import { cn } from "@/lib/utils";
+} from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { getNodeInfo } from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -33,30 +33,28 @@ interface NodeInfo {
 
 // Fun messages that rotate
 const funMessages = [
-  "Stacking sats like a boss ⚡",
-  "Lightning fast, as it should be ⚡",
-  "21 million reasons to be here 🧡",
-  "Running on pure Bitcoin energy ⚡",
-  "Number go up technology™ 📈",
-  "HODL mode: activated 💎",
-  "Not your keys, not your coins 🔐",
-  "Tick tock, next block ⏱️",
-  "Stay humble, stack sats 🧘",
+  'Stacking sats like a boss ⚡',
+  'Lightning fast, as it should be ⚡',
+  '21 million reasons to be here 🧡',
+  'Running on pure Bitcoin energy ⚡',
+  'Number go up technology™ 📈',
+  'HODL mode: activated 💎',
+  'Not your keys, not your coins 🔐',
+  'Tick tock, next block ⏱️',
+  'Stay humble, stack sats 🧘',
   "We're all gonna make it 🚀",
-  "Laser eyes engaged 👀",
-  "Orange pilling in progress 🍊",
-  "Fix the money, fix the world 🌍",
-  "Proof of work > Proof of stake 💪",
-  "Running Bitcoin since... now! ⚡",
+  'Laser eyes engaged 👀',
+  'Orange pilling in progress 🍊',
+  'Fix the money, fix the world 🌍',
+  'Proof of work > Proof of stake 💪',
+  'Running Bitcoin since... now! ⚡',
 ];
 
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const [nodeInfo, setNodeInfo] = useState<NodeInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const { theme, setTheme } = useTheme();
-  const [funMessage] = useState(() => 
-    funMessages[Math.floor(Math.random() * funMessages.length)]
-  );
+  const [funMessage] = useState(() => funMessages[Math.floor(Math.random() * funMessages.length)]);
 
   useEffect(() => {
     if (open && !nodeInfo) {
@@ -76,29 +74,29 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   const links = [
     {
-      title: "Phoenixd Documentation",
-      description: "Official API documentation",
-      href: "https://phoenix.acinq.co/server/api",
+      title: 'Phoenixd Documentation',
+      description: 'Official API documentation',
+      href: 'https://phoenix.acinq.co/server/api',
       icon: BookOpen,
     },
     {
-      title: "GitHub Repository",
-      description: "View source code",
-      href: "https://github.com/ACINQ/phoenixd",
+      title: 'GitHub Repository',
+      description: 'View source code',
+      href: 'https://github.com/ACINQ/phoenixd',
       icon: Github,
     },
     {
-      title: "Mempool Explorer",
-      description: "View blockchain transactions",
-      href: "https://mempool.space",
+      title: 'Mempool Explorer',
+      description: 'View blockchain transactions',
+      href: 'https://mempool.space',
       icon: ExternalLink,
     },
   ];
 
   const themes = [
-    { id: "dark", label: "Dark", icon: Moon, description: "Dark mode" },
-    { id: "light", label: "Light", icon: Sun, description: "Light mode" },
-    { id: "system", label: "Auto", icon: Monitor, description: "Follow system" },
+    { id: 'dark', label: 'Dark', icon: Moon, description: 'Dark mode' },
+    { id: 'light', label: 'Light', icon: Sun, description: 'Light mode' },
+    { id: 'system', label: 'Auto', icon: Monitor, description: 'Follow system' },
   ];
 
   return (
@@ -126,10 +124,10 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                   key={t.id}
                   onClick={() => setTheme(t.id)}
                   className={cn(
-                    "flex flex-col items-center gap-2 p-3 rounded-xl border transition-all",
+                    'flex flex-col items-center gap-2 p-3 rounded-xl border transition-all',
                     theme === t.id
-                      ? "bg-primary/10 border-primary/50 text-primary"
-                      : "bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.08] dark:border-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.05] hover:border-black/[0.12] dark:hover:border-white/[0.08] text-muted-foreground"
+                      ? 'bg-primary/10 border-primary/50 text-primary'
+                      : 'bg-black/[0.02] dark:bg-white/[0.02] border-black/[0.08] dark:border-white/[0.04] hover:bg-black/[0.05] dark:hover:bg-white/[0.05] hover:border-black/[0.12] dark:hover:border-white/[0.08] text-muted-foreground'
                   )}
                 >
                   <t.icon className="h-5 w-5" />
@@ -163,12 +161,14 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
                       <Wifi className="h-4 w-4" />
                       Network
                     </div>
-                    <span className={cn(
-                      "text-sm font-medium px-2 py-0.5 rounded-full",
-                      nodeInfo.chain === "mainnet" 
-                        ? "bg-bitcoin/10 text-bitcoin" 
-                        : "bg-blue-500/10 text-blue-500"
-                    )}>
+                    <span
+                      className={cn(
+                        'text-sm font-medium px-2 py-0.5 rounded-full',
+                        nodeInfo.chain === 'mainnet'
+                          ? 'bg-bitcoin/10 text-bitcoin'
+                          : 'bg-blue-500/10 text-blue-500'
+                      )}
+                    >
                       {nodeInfo.chain}
                     </span>
                   </div>

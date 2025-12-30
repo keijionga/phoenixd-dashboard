@@ -1,40 +1,40 @@
-import { Router, Request, Response } from "express";
-import { phoenixd } from "../index.js";
+import { Router, Request, Response } from 'express';
+import { phoenixd } from '../index.js';
 
 export const lnurlRouter = Router();
 
 // LNURL Pay
-lnurlRouter.post("/pay", async (req: Request, res: Response) => {
+lnurlRouter.post('/pay', async (req: Request, res: Response) => {
   try {
     const { lnurl, amountSat, message } = req.body;
     const result = await phoenixd.lnurlPay(lnurl, parseInt(amountSat), message);
     res.json(result);
   } catch (error) {
-    console.error("Error LNURL pay:", error);
+    console.error('Error LNURL pay:', error);
     res.status(500).json({ error: (error as Error).message });
   }
 });
 
 // LNURL Withdraw
-lnurlRouter.post("/withdraw", async (req: Request, res: Response) => {
+lnurlRouter.post('/withdraw', async (req: Request, res: Response) => {
   try {
     const { lnurl } = req.body;
     const result = await phoenixd.lnurlWithdraw(lnurl);
     res.json(result);
   } catch (error) {
-    console.error("Error LNURL withdraw:", error);
+    console.error('Error LNURL withdraw:', error);
     res.status(500).json({ error: (error as Error).message });
   }
 });
 
 // LNURL Auth
-lnurlRouter.post("/auth", async (req: Request, res: Response) => {
+lnurlRouter.post('/auth', async (req: Request, res: Response) => {
   try {
     const { lnurl } = req.body;
     const result = await phoenixd.lnurlAuth(lnurl);
     res.json({ message: result });
   } catch (error) {
-    console.error("Error LNURL auth:", error);
+    console.error('Error LNURL auth:', error);
     res.status(500).json({ error: (error as Error).message });
   }
 });
