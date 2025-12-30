@@ -5,6 +5,12 @@
 
 set -e
 
+# Check for rebuild flag
+REBUILD=false
+if [ "$1" == "--rebuild" ] || [ "$1" == "-r" ]; then
+    REBUILD=true
+fi
+
 echo "================================================"
 echo "  Phoenixd Dashboard - Setup"
 echo "================================================"
@@ -34,8 +40,13 @@ chmod 777 ./data/phoenixd
 echo -e "${GREEN}Data directory ready!${NC}"
 
 # Start services
-echo -e "${YELLOW}Starting services...${NC}"
-docker compose up -d
+if [ "$REBUILD" = true ]; then
+    echo -e "${YELLOW}Rebuilding and starting services...${NC}"
+    docker compose up -d --build
+else
+    echo -e "${YELLOW}Starting services...${NC}"
+    docker compose up -d
+fi
 
 # Wait for phoenixd to initialize and generate the password
 echo -e "${YELLOW}Waiting for phoenixd to initialize (this may take up to 60 seconds)...${NC}"
@@ -91,11 +102,25 @@ echo -e "${GREEN}.env file updated!${NC}"
 
 # Recreate backend to apply new password (restart doesn't reload .env variables)
 echo -e "${YELLOW}Recreating backend with new password...${NC}"
-docker compose up -d backend --force-recreate
+if [ "$REBUILD" = true ]; then
+    docker compose up -d --build backend --force-recreate
+else
+    docker compose up -d backend --force-recreate
+fi
 
 # Wait for backend to be healthy
 echo -e "${YELLOW}Waiting for backend to be ready...${NC}"
 sleep 10
+
+# Run Prisma migrations to ensure database schema is up to date
+echo -e "${YELLOW}Running database migrations...${NC}"
+docker compose exec -T backend npx prisma db push --skip-generate || echo -e "${YELLOW}Note: Migration will run on next backend start${NC}"
+
+# If frontend was rebuilt, wait for it to be ready
+if [ "$REBUILD" = true ]; then
+    echo -e "${YELLOW}Waiting for frontend to be ready...${NC}"
+    sleep 5
+fi
 
 # Check if all services are running
 echo ""
@@ -111,3 +136,8 @@ echo ""
 echo -e "${YELLOW}Note: The phoenixd password has been saved to .env${NC}"
 echo -e "${YELLOW}Do not commit this file to version control!${NC}"
 echo ""
+if [ "$REBUILD" = false ]; then
+    echo -e "${YELLOW}Tips:${NC}"
+    echo -e "${YELLOW}  - Run './setup.sh --rebuild' to rebuild containers after code changes${NC}"
+    echo ""
+fi
