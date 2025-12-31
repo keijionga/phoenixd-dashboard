@@ -1,6 +1,7 @@
 describe('Channels Page', () => {
   beforeEach(() => {
     cy.intercept('GET', '**/api/node/channels', { fixture: 'channels.json' }).as('getChannels');
+    cy.intercept('GET', '**/api/node/info', { fixture: 'node-info.json' }).as('getNodeInfo');
   });
 
   describe('Page Load', () => {
@@ -81,6 +82,7 @@ describe('Channels Page', () => {
   describe('Empty State', () => {
     it('shows empty state message when no channels', () => {
       cy.intercept('GET', '**/api/node/channels', { body: [] }).as('getEmptyChannels');
+      cy.intercept('GET', '**/api/node/info', { fixture: 'node-info.json' }).as('getNodeInfo');
 
       cy.visit('/channels');
       cy.wait('@getEmptyChannels');

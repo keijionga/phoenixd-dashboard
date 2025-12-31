@@ -84,6 +84,7 @@ describe('Payments Page', () => {
     it('shows empty state when no payments', () => {
       cy.intercept('GET', '**/api/payments/incoming*', { body: [] }).as('getEmptyIncoming');
       cy.intercept('GET', '**/api/payments/outgoing*', { body: [] }).as('getEmptyOutgoing');
+      cy.intercept('GET', '**/api/node/info', { fixture: 'node-info.json' }).as('getNodeInfo');
 
       cy.visit('/payments');
       cy.wait(['@getEmptyIncoming', '@getEmptyOutgoing']);
