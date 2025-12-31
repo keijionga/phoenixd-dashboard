@@ -24,10 +24,11 @@ import {
   getIncomingPayments,
   getOutgoingPayments,
   exportPayments,
+  getNodeInfo,
   type IncomingPayment,
   type OutgoingPayment,
 } from '@/lib/api';
-import { formatSats, cn } from '@/lib/utils';
+import { formatSats, cn, getMempoolUrl } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { PageTabs, type TabItem } from '@/components/ui/page-tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -42,26 +43,29 @@ export default function PaymentsPage() {
   const [exporting, setExporting] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [chain, setChain] = useState<string>('mainnet');
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchPayments = async () => {
+    const fetchData = async () => {
       try {
-        const [incoming, outgoing] = await Promise.all([
+        const [incoming, outgoing, nodeInfo] = await Promise.all([
           getIncomingPayments({ limit: 50 }),
           getOutgoingPayments({ limit: 50 }),
+          getNodeInfo(),
         ]);
         setIncomingPayments(incoming || []);
         setOutgoingPayments(outgoing || []);
+        setChain(nodeInfo.chain || 'mainnet');
       } catch (error) {
-        console.error('Failed to fetch payments:', error);
+        console.error('Failed to fetch data:', error);
         toast({ variant: 'destructive', title: 'Error', description: 'Failed to load payments' });
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPayments();
+    fetchData();
   }, [toast]);
 
   const handleExport = async () => {
@@ -85,8 +89,13 @@ export default function PaymentsPage() {
     }
   };
 
-  const copyToClipboard = (text: string, field: string) => {
-    navigator.clipboard.writeText(text);
+  const copyToClipboard = async (text: string, field: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      // Fallback for environments where clipboard API is not available
+      console.log('Clipboard API not available');
+    }
     setCopiedField(field);
     setTimeout(() => setCopiedField(null), 2000);
     toast({ title: 'Copied!', description: 'Copied to clipboard' });
@@ -123,7 +132,10 @@ export default function PaymentsPage() {
     .filter((p) => p.isPaid)
     .reduce((acc, p) => acc + p.receivedSat, 0);
   const totalSent = outgoingPayments.filter((p) => p.isPaid).reduce((acc, p) => acc + p.sent, 0);
-  const totalFees = outgoingPayments.filter((p) => p.isPaid).reduce((acc, p) => acc + p.fees, 0);
+  // Note: fees come from phoenixd API in millisatoshis (msat), need to convert to sats
+  const totalFees = Math.floor(
+    outgoingPayments.filter((p) => p.isPaid).reduce((acc, p) => acc + p.fees, 0) / 1000
+  );
 
   if (loading) {
     return (
@@ -355,7 +367,7 @@ export default function PaymentsPage() {
                           </span>
                           {payment.fees > 0 && (
                             <span className="text-[10px] md:text-xs text-muted-foreground hidden sm:inline">
-                              Fee: {formatSats(payment.fees)}
+                              Fee: {formatSats(Math.floor(payment.fees / 1000))}
                             </span>
                           )}
                         </div>
@@ -416,7 +428,7 @@ export default function PaymentsPage() {
                 )}
                 {'fees' in selectedPayment && selectedPayment.fees > 0 && (
                   <p className="text-sm text-muted-foreground mt-2">
-                    Fee: {formatSats(selectedPayment.fees)}
+                    Fee: {formatSats(Math.floor(selectedPayment.fees / 1000))}
                   </p>
                 )}
               </div>
@@ -548,7 +560,7 @@ export default function PaymentsPage() {
                     fullValue={selectedPayment.txId}
                     onCopy={() => copyToClipboard(selectedPayment.txId!, 'txid')}
                     copied={copiedField === 'txid'}
-                    link={`https://mempool.space/tx/${selectedPayment.txId}`}
+                    link={getMempoolUrl(chain, selectedPayment.txId)}
                   />
                 )}
               </div>

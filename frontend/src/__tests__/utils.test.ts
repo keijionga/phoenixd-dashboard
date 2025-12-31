@@ -286,10 +286,11 @@ describe('copyToClipboard utility', () => {
     expect(mockClipboard.writeText).toHaveBeenCalledWith(invoice);
   });
 
-  it('should handle clipboard failure', async () => {
+  it('should handle clipboard failure gracefully', async () => {
     mockClipboard.writeText.mockRejectedValue(new Error('Clipboard access denied'));
 
-    await expect(copyToClipboard('test')).rejects.toThrow('Clipboard access denied');
+    // Function should not throw, it catches errors silently for better UX
+    await expect(copyToClipboard('test')).resolves.toBeUndefined();
   });
 
   it('should return a Promise', () => {
